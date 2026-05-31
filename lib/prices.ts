@@ -14,7 +14,7 @@ export async function getFxMatrix(): Promise<Record<string, Record<string, numbe
   try {
     // One call: rates relative to USD.
     const res = await fetch(
-      "https://api.frankfurter.app/latest?from=USD&to=ILS,EUR,GBP",
+      "https://api.frankfurter.dev/v1/latest?base=USD&symbols=ILS,EUR,GBP",
       { next: { revalidate: 3600 } }
     );
     const json = await res.json();
