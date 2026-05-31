@@ -1,0 +1,42 @@
+import Link from "next/link";
+import { ARTICLE_CATEGORIES } from "@/lib/constants";
+
+export type Article = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  cover_image: string | null;
+  category: string;
+  published_at: string | null;
+};
+
+export function categoryLabel(cat: string) {
+  return ARTICLE_CATEGORIES.find((c) => c.value === cat)?.label ?? cat;
+}
+
+export function ArticleCard({ a }: { a: Article }) {
+  return (
+    <Link href={`/articles/${a.slug}`} className="acard">
+      <div className="acard-img" aria-hidden="true">
+        {a.cover_image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={a.cover_image} alt="" loading="lazy" />
+        ) : (
+          <div className="acard-ph">
+            <svg viewBox="0 0 58 36" width="48" height="30" fill="none">
+              <path d="M4 34 L4 3 L22 34 L22 3" stroke="#cfcfcf" strokeWidth="3.4" />
+              <path d="M32 3 L43 34 L54 3" stroke="#cfcfcf" strokeWidth="3.4" />
+            </svg>
+          </div>
+        )}
+      </div>
+      <div className="acard-body">
+        <span className="pill">{categoryLabel(a.category)}</span>
+        <h3>{a.title}</h3>
+        {a.excerpt && <p>{a.excerpt}</p>}
+        <span className="acard-more">קראו עוד ←</span>
+      </div>
+    </Link>
+  );
+}
