@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="נועם ורדי - בניית אתרים חכמים עם בינה מלאכותית. פתרונות דיגיטליים מודרניים לעסקים." />
+  <title>נועם ורדי | AI · Innovation · Future</title>
+
+  <!-- Favicon: NV mark -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 58 36'%3E%3Cpath d='M4 34 L4 3 L22 34 L22 3' stroke='%230a0a0a' stroke-width='3.4' fill='none'/%3E%3Cpath d='M32 3 L43 34 L54 3' stroke='%230a0a0a' stroke-width='3.4' fill='none'/%3E%3C/svg%3E" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── Reset & Base ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0a0a0a;
+      --white: #ffffff;
+      --gray-100: #f5f5f5;
+      --gray-200: #e8e8e8;
+      --gray-400: #9a9a9a;
+      --gray-600: #555555;
+      --accent: #0a0a0a;
+      --radius: 16px;
+      --nav-h: 72px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Heebo', sans-serif;
+      background: var(--white);
+      color: var(--black);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── Skip link (accessibility) ─── */
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      right: 0;
+      background: var(--black);
+      color: var(--white);
+      padding: 8px 16px;
+      z-index: 9999;
+      font-size: 14px;
+      transition: top .2s;
+      border-radius: 0 0 8px 0;
+    }
+    .skip-link:focus { top: 0; }
+
+    /* ─── Navbar ─── */
+    nav {
+      position: fixed;
+      top: 0; right: 0; left: 0;
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      z-index: 1000;
+      transition: background .3s;
+    }
+
+    /* NV Logo SVG */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .logo-mark svg { width: 40px; height: 28px; }
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+      font-family: 'Inter', sans-serif;
+    }
+    .logo-text .name {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      color: var(--black);
+    }
+    .logo-text .tagline {
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      color: var(--gray-600);
+    }
+    .logo-divider {
+      width: 1px;
+      height: 32px;
+      background: var(--gray-200);
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 36px;
+      align-items: center;
+    }
+    .nav-links a {
+      font-family: 'Heebo', sans-serif;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--gray-600);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color .2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; right: 0;
+      width: 0; height: 2px;
+      background: var(--black);
+      transition: width .3s;
+    }
+    .nav-links a:hover { color: var(--black); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-cta {
+      background: var(--black);
+      color: var(--white) !important;
+      padding: 10px 22px;
+      border-radius: 6px;
+      font-weight: 500 !important;
+      transition: opacity .2s !important;
+    }
+    .nav-cta:hover { opacity: 0.8; }
+    .nav-cta::after { display: none !important; }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      z-index: 1001;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--black);
+      transition: all .3s;
+    }
+
+    /* ─── Hero ─── */
+    #home {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: calc(var(--nav-h) + 60px) 48px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 60px;
+    }
+
+    .hero-text h1 {
+      font-size: clamp(52px, 7vw, 96px);
+      font-weight: 900;
+      line-height: 1.02;
+      letter-spacing: -0.03em;
+      color: var(--black);
+      margin-bottom: 28px;
+    }
+    .hero-text h1 span {
+      display: block;
+    }
+    .hero-text p {
+      font-size: 18px;
+      color: var(--gray-600);
+      font-weight: 300;
+      max-width: 420px;
+      margin-bottom: 40px;
+      line-height: 1.7;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: var(--black);
+      color: var(--white);
+      padding: 15px 32px;
+      border: 2px solid var(--black);
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all .25s;
+      font-family: 'Heebo', sans-serif;
+    }
+    .btn-primary:hover {
+      background: transparent;
+      color: var(--black);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--black);
+      padding: 15px 32px;
+      border: 2px solid var(--gray-200);
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all .25s;
+      font-family: 'Heebo', sans-serif;
+    }
+    .btn-secondary:hover {
+      border-color: var(--black);
+    }
+
+    /* Wave animation canvas */
+    .hero-visual {
+      position: relative;
+      height: 480px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    canvas#waveCanvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 24px;
+    }
+
+    /* Floating tags */
+    .hero-tags {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 32px;
+    }
+    .tag {
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 12px;
+      color: var(--gray-600);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── Features strip ─── */
+    .features-strip {
+      background: var(--black);
+      padding: 64px 48px;
+    }
+    .features-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 48px;
+    }
+    .feature-item {
+      text-align: center;
+      color: var(--white);
+    }
+    .feature-icon {
+      font-size: 32px;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .feature-item h3 {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      margin-bottom: 10px;
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+    }
+    .feature-item p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.55);
+      font-weight: 300;
+      line-height: 1.6;
+    }
+
+    /* ─── About ─── */
+    #about {
+      padding: 120px 48px;
+      background: var(--white);
+    }
+    .about-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: var(--gray-400);
+      margin-bottom: 16px;
+      font-family: 'Inter', sans-serif;
+    }
+    .about-text h2 {
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+    }
+    .about-text p {
+      font-size: 16px;
+      color: var(--gray-600);
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .stat-box {
+      padding: 32px 28px;
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+    }
+    .stat-box .num {
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 8px;
+      color: var(--black);
+    }
+    .stat-box .label {
+      font-size: 13px;
+      color: var(--gray-600);
+      font-weight: 400;
+    }
+
+    /* ─── Portfolio / Work ─── */
+    #work {
+      padding: 120px 48px;
+      background: var(--gray-100);
+    }
+    .section-header {
+      max-width: 1200px;
+      margin: 0 auto 64px;
+    }
+    .section-header h2 {
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .section-header p {
+      font-size: 16px;
+      color: var(--gray-600);
+      max-width: 480px;
+      line-height: 1.7;
+    }
+
+    .portfolio-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+
+    .portfolio-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--gray-200);
+      transition: transform .3s, box-shadow .3s;
+    }
+    .portfolio-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.1);
+    }
+
+    /* Browser chrome mockup */
+    .browser-chrome {
+      background: #f0f0f0;
+      border-bottom: 1px solid var(--gray-200);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .browser-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .browser-dots span {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--gray-200);
+    }
+    .browser-dots span:nth-child(1) { background: #ff5f57; }
+    .browser-dots span:nth-child(2) { background: #febc2e; }
+    .browser-dots span:nth-child(3) { background: #28c840; }
+    .browser-bar {
+      flex: 1;
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: var(--gray-400);
+      direction: ltr;
+      font-family: 'Inter', sans-serif;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .iframe-wrapper {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      overflow: hidden;
+      background: #fafafa;
+    }
+    .iframe-wrapper iframe {
+      width: 160%;
+      height: 160%;
+      transform: scale(0.625);
+      transform-origin: top right;
+      border: none;
+      pointer-events: none;
+    }
+
+    /* overlay for hover interaction */
+    .iframe-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 24px;
+      background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .portfolio-card:hover .iframe-overlay { opacity: 1; }
+    .view-btn {
+      background: var(--white);
+      color: var(--black);
+      padding: 10px 24px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      font-family: 'Heebo', sans-serif;
+      letter-spacing: 0.05em;
+      transition: background .2s;
+    }
+    .view-btn:hover { background: var(--gray-100); }
+
+    .portfolio-info {
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--gray-100);
+    }
+    .portfolio-info h3 {
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .portfolio-info .site-tags {
+      display: flex;
+      gap: 8px;
+    }
+    .site-tag {
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      color: var(--gray-600);
+      font-weight: 500;
+    }
+
+    /* ─── Services ─── */
+    #services {
+      padding: 120px 48px;
+      background: var(--white);
+    }
+    .services-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      margin-top: 64px;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .service-card {
+      padding: 40px 32px;
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      transition: background .3s;
+      cursor: default;
+    }
+    .service-card:hover {
+      background: var(--black);
+    }
+    .service-card:hover .service-icon,
+    .service-card:hover h3,
+    .service-card:hover p { color: var(--white); }
+
+    .service-icon {
+      font-size: 28px;
+      margin-bottom: 20px;
+      display: block;
+      transition: color .3s;
+    }
+    .service-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      transition: color .3s;
+    }
+    .service-card p {
+      font-size: 14px;
+      color: var(--gray-600);
+      line-height: 1.7;
+      transition: color .3s;
+    }
+
+    /* ─── Offer / Advertising ─── */
+    #offer {
+      padding: 120px 48px;
+      background: var(--gray-100);
+    }
+    .offer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .offer-card {
+      background: var(--black);
+      color: var(--white);
+      border-radius: 24px;
+      padding: 56px 56px;
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 56px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .offer-badge {
+      position: absolute;
+      top: 28px;
+      left: 28px;
+      background: var(--white);
+      color: var(--black);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      padding: 7px 16px;
+      border-radius: 100px;
+      font-family: 'Inter', sans-serif;
+    }
+    .offer-content h2 {
+      font-size: clamp(30px, 4vw, 46px);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 18px;
+    }
+    .offer-content > p {
+      font-size: 16px;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.7;
+      margin-bottom: 28px;
+      max-width: 460px;
+    }
+    .offer-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .offer-features li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 15px;
+      color: rgba(255,255,255,0.85);
+    }
+    .offer-features .check {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--white);
+      color: var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .offer-price-box {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px;
+      padding: 36px 32px;
+      text-align: center;
+    }
+    .offer-price-box .old-price {
+      font-size: 16px;
+      color: rgba(255,255,255,0.4);
+      text-decoration: line-through;
+      margin-bottom: 4px;
+    }
+    .offer-price-box .price {
+      font-size: 58px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .offer-price-box .price span { font-size: 24px; font-weight: 700; }
+    .offer-price-box .term {
+      font-size: 14px;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 6px;
+    }
+    .offer-price-box .save {
+      display: inline-block;
+      background: rgba(255,255,255,0.1);
+      border-radius: 100px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 24px;
+    }
+    .offer-price-box .btn-offer {
+      display: block;
+      background: var(--white);
+      color: var(--black);
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: opacity .2s;
+    }
+    .offer-price-box .btn-offer:hover { opacity: 0.85; }
+    .offer-price-box .micro {
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+      margin-top: 14px;
+    }
+
+    /* ─── Contact ─── */
+    #contact {
+      padding: 120px 48px;
+      background: var(--black);
+      color: var(--white);
+    }
+    .contact-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .contact-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .contact-header .section-label { color: rgba(255,255,255,0.4); }
+    .contact-header h2 {
+      font-size: clamp(32px, 5vw, 64px);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .contact-header p {
+      font-size: 16px;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 60px;
+      align-items: start;
+    }
+
+    .contact-info h3 {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 24px;
+      font-family: 'Inter', sans-serif;
+    }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+      text-decoration: none;
+      color: var(--white);
+      font-size: 15px;
+      padding: 14px 18px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      transition: border-color .2s, background .2s;
+    }
+    .contact-item:hover {
+      border-color: rgba(255,255,255,0.35);
+      background: rgba(255,255,255,0.05);
+    }
+    .contact-item .icon { font-size: 18px; flex-shrink: 0; }
+    .contact-item .detail { font-size: 13px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+    .contact-item-text { display: flex; flex-direction: column; }
+
+    /* Form */
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-group label {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      padding: 13px 16px;
+      color: var(--white);
+      font-size: 15px;
+      font-family: 'Heebo', sans-serif;
+      outline: none;
+      transition: border-color .2s;
+      width: 100%;
+      direction: rtl;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: rgba(255,255,255,0.4);
+    }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: rgba(255,255,255,0.25); }
+    .form-group textarea { resize: vertical; min-height: 120px; }
+    .form-group select option { background: #1a1a1a; color: var(--white); }
+
+    .form-submit {
+      background: var(--white);
+      color: var(--black);
+      padding: 15px 32px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Heebo', sans-serif;
+      transition: opacity .2s;
+      letter-spacing: 0.05em;
+    }
+    .form-submit:hover { opacity: 0.85; }
+
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 32px;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      color: var(--white);
+    }
+    .form-success .checkmark { font-size: 48px; margin-bottom: 12px; }
+    .form-success h3 { font-size: 20px; margin-bottom: 8px; }
+    .form-success p { color: rgba(255,255,255,0.5); font-size: 14px; }
+
+    /* ─── Footer ─── */
+    footer {
+      background: #050505;
+      color: rgba(255,255,255,0.35);
+      padding: 32px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    footer a { color: rgba(255,255,255,0.35); text-decoration: none; }
+    footer a:hover { color: var(--white); }
+
+    /* ─── Scroll animations ─── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-up.d1 { transition-delay: .1s; }
+    .fade-up.d2 { transition-delay: .2s; }
+    .fade-up.d3 { transition-delay: .3s; }
+
+    /* ─── Accessibility focus ─── */
+    *:focus-visible {
+      outline: 2px solid var(--black);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+    #contact *:focus-visible { outline-color: var(--white); }
+
+    /* ─── Mobile nav drawer ─── */
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--white);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--black);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 900px) {
+      nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+
+      #home { padding: calc(var(--nav-h) + 40px) 24px 60px; }
+      .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+      .hero-visual { height: 280px; }
+      .hero-text p { max-width: 100%; }
+
+      .features-strip { padding: 48px 24px; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+
+      #about { padding: 80px 24px; }
+      .about-inner { grid-template-columns: 1fr; gap: 48px; }
+
+      #work { padding: 80px 24px; }
+      .portfolio-grid { grid-template-columns: 1fr; }
+      .iframe-wrapper { height: 300px; }
+      .iframe-wrapper iframe { width: 180%; height: 180%; transform: scale(0.555); }
+
+      #services { padding: 80px 24px; }
+      .services-grid { grid-template-columns: 1fr; }
+
+      #offer { padding: 80px 24px; }
+      .offer-card { grid-template-columns: 1fr; gap: 36px; padding: 40px 28px; }
+      .offer-badge { top: 20px; left: 20px; }
+
+      #contact { padding: 80px 24px; }
+      .contact-layout { grid-template-columns: 1fr; gap: 40px; }
+      .form-row { grid-template-columns: 1fr; }
+
+      footer { flex-direction: column; gap: 12px; text-align: center; padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Skip link -->
+  <a href="#main" class="skip-link">דלג לתוכן הראשי</a>
+
+  <!-- ─── Navbar ─── -->
+  <nav role="navigation" aria-label="ניווט ראשי">
+    <a href="#home" class="logo" aria-label="נועם ורדי - חזרה לדף הבית">
+      <!-- NV SVG Mark -->
+      <div class="logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 58 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- N -->
+          <path d="M4 34 L4 3 L22 34 L22 3" stroke="#0a0a0a" stroke-width="3.4" stroke-linecap="square" stroke-linejoin="miter" fill="none"/>
+          <!-- V -->
+          <path d="M32 3 L43 34 L54 3" stroke="#0a0a0a" stroke-width="3.4" stroke-linecap="square" stroke-linejoin="miter" fill="none"/>
+        </svg>
+      </div>
+      <div class="logo-divider" aria-hidden="true"></div>
+      <div class="logo-text">
+        <span class="name">NOAM VARDI</span>
+        <span class="tagline">AI · INNOVATION · FUTURE</span>
+      </div>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="#about">אודות</a></li>
+      <li><a href="#work">עבודות</a></li>
+      <li><a href="#services">שירותים</a></li>
+      <li><a href="#contact" class="nav-cta">צור קשר</a></li>
+    </ul>
+
+    <button class="hamburger" aria-label="פתח תפריט" aria-expanded="false" onclick="toggleMenu(this)">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile nav -->
+  <div class="mobile-nav" role="dialog" aria-label="תפריט ניווט" id="mobileNav">
+    <a href="#about" onclick="closeMobileNav()">אודות</a>
+    <a href="#work" onclick="closeMobileNav()">עבודות</a>
+    <a href="#services" onclick="closeMobileNav()">שירותים</a>
+    <a href="#contact" onclick="closeMobileNav()">צור קשר</a>
+  </div>
+
+  <main id="main">
+
+    <!-- ─── Hero ─── -->
+    <section id="home" aria-label="כותרת ראשית">
+      <div class="hero-inner">
+        <div class="hero-text">
+          <h1>
+            <span>בינה</span>
+            <span>מלאכותית.</span>
+            <span>חדשנות.</span>
+          </h1>
+          <p>בניית אתרים ופתרונות דיגיטליים חכמים המשלבים בינה מלאכותית — מהירים, יפים, ומותאמים לעתיד.</p>
+          <div class="hero-btns">
+            <a href="#work" class="btn-primary">הצג את העבודות</a>
+            <a href="#contact" class="btn-secondary">בואו נדבר</a>
+          </div>
+          <div class="hero-tags" aria-label="תחומי התמחות">
+            <span class="tag">בינה מלאכותית</span>
+            <span class="tag">עיצוב UX/UI</span>
+            <span class="tag">פיתוח Full-Stack</span>
+            <span class="tag">אוטומציה</span>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-hidden="true">
+          <canvas id="waveCanvas"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Features Strip ─── -->
+    <div class="features-strip" aria-label="ערכי הבסיס">
+      <div class="features-grid">
+        <div class="feature-item fade-up">
+          <span class="feature-icon" aria-hidden="true">🤖</span>
+          <h3>AI SOLUTIONS</h3>
+          <p>מערכות חכמות מונעות בינה מלאכותית לפתרונות בעלי השפעה</p>
+        </div>
+        <div class="feature-item fade-up d1">
+          <span class="feature-icon" aria-hidden="true">💡</span>
+          <h3>INNOVATION</h3>
+          <p>פריצת גבולות עם רעיונות ופתרונות חדשניים</p>
+        </div>
+        <div class="feature-item fade-up d2">
+          <span class="feature-icon" aria-hidden="true">⚙️</span>
+          <h3>AUTOMATION</h3>
+          <p>ייעול תהליכים עסקיים עם AI ואוטומציה חכמה</p>
+        </div>
+        <div class="feature-item fade-up d3">
+          <span class="feature-icon" aria-hidden="true">🚀</span>
+          <h3>FUTURE READY</h3>
+          <p>פתרונות מדרגיים שמוכנים למחר</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── About ─── -->
+    <section id="about" aria-label="אודות">
+      <div class="about-inner">
+        <div class="about-text fade-up">
+          <p class="section-label">ABOUT</p>
+          <h2>בונה את הדיגיטל של מחר, היום.</h2>
+          <p>אני נועם ורדי — מפתח Full-Stack המתמחה בשילוב בינה מלאכותית בפתרונות דיגיטליים. אני בונה אתרים ואפליקציות שלא רק נראים טוב — הם חושבים.</p>
+          <p>כל פרויקט מתחיל בהבנת הצורך האמיתי ומסתיים בפתרון שעובד — מהיר, נגיש ומדרגי.</p>
+          <div style="margin-top: 32px;">
+            <a href="#contact" class="btn-primary">בואו נשתף פעולה</a>
+          </div>
+        </div>
+
+        <div class="stats-grid fade-up d1" aria-label="נתוני ביצועים">
+          <div class="stat-box">
+            <div class="num">10+</div>
+            <div class="label">פרויקטים שנמסרו</div>
+          </div>
+          <div class="stat-box">
+            <div class="num">AI</div>
+            <div class="label">בכל פתרון</div>
+          </div>
+          <div class="stat-box">
+            <div class="num">100%</div>
+            <div class="label">נגישות WCAG</div>
+          </div>
+          <div class="stat-box">
+            <div class="num">∞</div>
+            <div class="label">יצירתיות</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Portfolio / Work ─── -->
+    <section id="work" aria-label="עבודות ופרויקטים">
+      <div class="section-header fade-up">
+        <p class="section-label">WORK</p>
+        <h2>אתרים שבניתי</h2>
+        <p>לחצו על הכרטיס לצפייה באתר המלא</p>
+      </div>
+
+      <div class="portfolio-grid">
+
+        <!-- Site 1: avivardi.online -->
+        <article class="portfolio-card fade-up" aria-label="אתר Aviv Vardi">
+          <div class="browser-chrome" aria-hidden="true">
+            <div class="browser-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="browser-bar">avivardi.online</div>
+          </div>
+          <div class="iframe-wrapper">
+            <iframe
+              src="https://avivardi.online"
+              title="אתר Aviv Vardi"
+              loading="lazy"
+              sandbox="allow-scripts allow-same-origin"
+              aria-label="תצוגה מקדימה של אתר avivardi.online"
+            ></iframe>
+            <div class="iframe-overlay" aria-hidden="true">
+              <a href="https://avivardi.online" target="_blank" rel="noopener noreferrer" class="view-btn">פתח אתר ←</a>
+            </div>
+          </div>
+          <div class="portfolio-info">
+            <h3>Aviv Vardi</h3>
+            <div class="site-tags">
+              <span class="site-tag">Portfolio</span>
+              <span class="site-tag">Design</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Site 2: talis-flower.vercel.app -->
+        <article class="portfolio-card fade-up d1" aria-label="אתר Talis Flower">
+          <div class="browser-chrome" aria-hidden="true">
+            <div class="browser-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="browser-bar">talis-flower.vercel.app</div>
+          </div>
+          <div class="iframe-wrapper">
+            <iframe
+              src="https://talis-flower.vercel.app/"
+              title="אתר Talis Flower"
+              loading="lazy"
+              sandbox="allow-scripts allow-same-origin"
+              aria-label="תצוגה מקדימה של אתר Talis Flower"
+            ></iframe>
+            <div class="iframe-overlay" aria-hidden="true">
+              <a href="https://talis-flower.vercel.app/" target="_blank" rel="noopener noreferrer" class="view-btn">פתח אתר ←</a>
+            </div>
+          </div>
+          <div class="portfolio-info">
+            <h3>Talis Flower</h3>
+            <div class="site-tags">
+              <span class="site-tag">E-Commerce</span>
+              <span class="site-tag">Floral</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ─── Services ─── -->
+    <section id="services" aria-label="שירותים">
+      <div class="services-inner">
+        <div class="section-header fade-up" style="margin-bottom:0;">
+          <p class="section-label">SERVICES</p>
+          <h2>מה אני מציע</h2>
+        </div>
+
+        <div class="services-grid" role="list">
+          <div class="service-card fade-up" role="listitem">
+            <span class="service-icon" aria-hidden="true">🌐</span>
+            <h3>בניית אתרים</h3>
+            <p>אתרים מודרניים, מהירים ונגישים עם עיצוב מותאם אישית. מ-Landing page ועד פלטפורמות מורכבות.</p>
+          </div>
+          <div class="service-card fade-up d1" role="listitem">
+            <span class="service-icon" aria-hidden="true">🤖</span>
+            <h3>שילוב AI</h3>
+            <p>אינטגרציה של כלי בינה מלאכותית לאתר שלכם — chatbots, אוטומציה, עיבוד תוכן חכם ועוד.</p>
+          </div>
+          <div class="service-card fade-up d2" role="listitem">
+            <span class="service-icon" aria-hidden="true">⚡</span>
+            <h3>אופטימיזציה</h3>
+            <p>שיפור מהירות, נגישות WCAG, SEO ו-Core Web Vitals לאתרים קיימים.</p>
+          </div>
+          <div class="service-card fade-up" role="listitem">
+            <span class="service-icon" aria-hidden="true">🎨</span>
+            <h3>עיצוב UX/UI</h3>
+            <p>ממשקים שנראים מדהים ומרגישים טבעיים — עיצוב שמוביל לתוצאות.</p>
+          </div>
+          <div class="service-card fade-up d1" role="listitem">
+            <span class="service-icon" aria-hidden="true">🔗</span>
+            <h3>Full-Stack פיתוח</h3>
+            <p>API, מסדי נתונים, Supabase, ו-serverless — הכל תחת קורת גג אחת.</p>
+          </div>
+          <div class="service-card fade-up d2" role="listitem">
+            <span class="service-icon" aria-hidden="true">📱</span>
+            <h3>Responsive Design</h3>
+            <p>כל אתר מותאם מושלם למובייל, טאבלט ודסקטופ — ללא פשרות.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Offer / Advertising ─── -->
+    <section id="offer" aria-label="מבצע אתר בלעדי">
+      <div class="offer-inner">
+        <div class="offer-card fade-up">
+          <span class="offer-badge" aria-hidden="true">מבצע מוגבל</span>
+          <div class="offer-content">
+            <p class="section-label" style="color:rgba(255,255,255,0.4);">חבילת אתר בלעדי</p>
+            <h2>אתר מקצועי משלך — ל-3 שנים מלאות</h2>
+            <p>חבילה כוללת הכל: בנייה, העלאה לאוויר, קידום בגוגל ותחזוקה שוטפת — במחיר של שנה אחת.</p>
+            <ul class="offer-features">
+              <li><span class="check" aria-hidden="true">✓</span> אתר בלעדי מעוצב אישית</li>
+              <li><span class="check" aria-hidden="true">✓</span> העלאה והופעה בגוגל (SEO + אינדוקס)</li>
+              <li><span class="check" aria-hidden="true">✓</span> קישור (דומיין) יפה ומותאם לעסק</li>
+              <li><span class="check" aria-hidden="true">✓</span> פרסום קטן להשקה</li>
+              <li><span class="check" aria-hidden="true">✓</span> חודש שירות תיקונים חופשי</li>
+              <li><span class="check" aria-hidden="true">✓</span> אחזקה מלאה לכל תקופת ההתקשרות</li>
+            </ul>
+          </div>
+          <div class="offer-price-box">
+            <div class="old-price">במקום 4,500 ₪</div>
+            <div class="price">1,500<span> ₪</span></div>
+            <div class="term">ל-3 שנים מלאות</div>
+            <div class="save">חיסכון של עד 66%</div>
+            <a href="#contact" class="btn-offer">אני רוצה את המבצע</a>
+            <div class="micro">* בכפוף לתנאי ההתקשרות. ניתן לשדרג בכל עת.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Contact ─── -->
+    <section id="contact" aria-label="צור קשר">
+      <div class="contact-inner">
+        <div class="contact-header fade-up">
+          <p class="section-label">CONTACT</p>
+          <h2>בואו נבנה משהו ביחד</h2>
+          <p>רעיון? פרויקט? פשוט שאלה? — אשמח לשמוע.</p>
+        </div>
+
+        <div class="contact-layout">
+          <div class="contact-info fade-up">
+            <h3>פרטי יצירת קשר</h3>
+
+            <a href="tel:0528369212" class="contact-item" aria-label="התקשר לנועם ורדי">
+              <span class="icon" aria-hidden="true">📞</span>
+              <div class="contact-item-text">
+                <span>052-836-9212</span>
+                <span class="detail">זמין א'–ו' 9:00–20:00</span>
+              </div>
+            </a>
+
+            <a href="mailto:vardinoam3@gmail.com" class="contact-item" aria-label="שלח מייל לנועם ורדי">
+              <span class="icon" aria-hidden="true">✉️</span>
+              <div class="contact-item-text">
+                <span>vardinoam3@gmail.com</span>
+                <span class="detail">מענה תוך 24 שעות</span>
+              </div>
+            </a>
+
+            <a href="https://wa.me/972528369212" target="_blank" rel="noopener noreferrer" class="contact-item" aria-label="שלח הודעת WhatsApp">
+              <span class="icon" aria-hidden="true">💬</span>
+              <div class="contact-item-text">
+                <span>WhatsApp</span>
+                <span class="detail">הדרך המהירה ביותר</span>
+              </div>
+            </a>
+          </div>
+
+          <div class="fade-up d1">
+            <form class="contact-form" id="contactForm" aria-label="טופס יצירת קשר" novalidate onsubmit="handleSubmit(event)">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="fname">שם מלא *</label>
+                  <input type="text" id="fname" name="name" placeholder="ישראל ישראלי" required autocomplete="name" />
+                </div>
+                <div class="form-group">
+                  <label for="fphone">טלפון</label>
+                  <input type="tel" id="fphone" name="phone" placeholder="05X-XXXXXXX" autocomplete="tel" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="femail">אימייל *</label>
+                <input type="email" id="femail" name="email" placeholder="you@example.com" required autocomplete="email" />
+              </div>
+
+              <div class="form-group">
+                <label for="fservice">סוג שירות</label>
+                <select id="fservice" name="service">
+                  <option value="">בחר שירות...</option>
+                  <option value="website">בניית אתר</option>
+                  <option value="ai">שילוב AI</option>
+                  <option value="design">עיצוב UX/UI</option>
+                  <option value="optimization">אופטימיזציה</option>
+                  <option value="other">אחר</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="fmsg">ספר לי על הפרויקט *</label>
+                <textarea id="fmsg" name="message" placeholder="מה אתם רוצים לבנות?" required></textarea>
+              </div>
+
+              <button type="submit" class="form-submit" aria-label="שלח הודעה">שלח הודעה →</button>
+            </form>
+
+            <div class="form-success" id="formSuccess" role="alert" aria-live="polite">
+              <div class="checkmark" aria-hidden="true">✓</div>
+              <h3>ההודעה נשלחה!</h3>
+              <p>אחזור אליך בהקדם האפשרי, תודה!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ─── Footer ─── -->
+  <footer role="contentinfo">
+    <span>© 2025 Noam Vardi · All rights reserved</span>
+    <span>
+      <a href="mailto:vardinoam3@gmail.com">vardinoam3@gmail.com</a>
+      &nbsp;·&nbsp;
+      <a href="tel:0528369212">052-836-9212</a>
+    </span>
+  </footer>
+
+  <!-- ─── Scripts ─── -->
+  <script>
+    /* ── Wave Canvas ── */
+    (function() {
+      const canvas = document.getElementById('waveCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let W, H, animId;
+      let t = 0;
+
+      function resize() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        W = canvas.width = rect.width;
+        H = canvas.height = rect.height;
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+
+        const waves = [
+          { amp: 0.18, freq: 0.012, phase: 0,    alpha: 0.08, thick: 80 },
+          { amp: 0.14, freq: 0.018, phase: 1.2,  alpha: 0.06, thick: 60 },
+          { amp: 0.10, freq: 0.024, phase: 2.4,  alpha: 0.04, thick: 40 },
+          { amp: 0.22, freq: 0.009, phase: 0.6,  alpha: 0.05, thick: 100 },
+        ];
+
+        waves.forEach(w => {
+          ctx.beginPath();
+          for (let x = 0; x <= W; x++) {
+            const y = H * 0.5
+              + Math.sin(x * w.freq + t + w.phase) * H * w.amp
+              + Math.sin(x * w.freq * 1.7 + t * 1.3 + w.phase) * H * w.amp * 0.4;
+            x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+          }
+
+          const grad = ctx.createLinearGradient(0, 0, W, H);
+          grad.addColorStop(0, `rgba(20,20,20,${w.alpha * 3})`);
+          grad.addColorStop(0.5, `rgba(100,100,100,${w.alpha})`);
+          grad.addColorStop(1, `rgba(20,20,20,${w.alpha * 2})`);
+
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = w.thick;
+          ctx.lineCap = 'round';
+          ctx.stroke();
+        });
+
+        /* dots */
+        for (let i = 0; i < 30; i++) {
+          const x = (Math.sin(i * 2.5 + t * 0.4) * 0.4 + 0.5) * W;
+          const y = (Math.cos(i * 1.8 + t * 0.3) * 0.35 + 0.5) * H;
+          const r = Math.abs(Math.sin(i + t * 0.5)) * 2.5 + 0.5;
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(0,0,0,${0.12 + Math.sin(i + t) * 0.06})`;
+          ctx.fill();
+        }
+
+        t += 0.008;
+        animId = requestAnimationFrame(draw);
+      }
+
+      resize();
+      window.addEventListener('resize', resize);
+      draw();
+
+      /* pause when not visible */
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) cancelAnimationFrame(animId);
+        else draw();
+      });
+    })();
+
+    /* ── Scroll fade-in ── */
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    /* ── Mobile menu ── */
+    function toggleMenu(btn) {
+      const isOpen = document.getElementById('mobileNav').classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen);
+      btn.setAttribute('aria-label', isOpen ? 'סגור תפריט' : 'פתח תפריט');
+      document.body.style.overflow = isOpen ? 'hidden' : '';
+    }
+    function closeMobileNav() {
+      document.getElementById('mobileNav').classList.remove('open');
+      document.querySelector('.hamburger').setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+
+    /* ── Form submit (mailto fallback) ── */
+    function handleSubmit(e) {
+      e.preventDefault();
+      const form = e.target;
+      const name = form.name.value.trim();
+      const email = form.email.value.trim();
+      const msg = form.message.value.trim();
+
+      if (!name || !email || !msg) {
+        alert('נא למלא את כל השדות החובה');
+        return;
+      }
+
+      const subject = encodeURIComponent(`פנייה מהאתר - ${name}`);
+      const body = encodeURIComponent(`שם: ${name}\nאימייל: ${email}\nטלפון: ${form.phone.value}\nשירות: ${form.service.value}\n\n${msg}`);
+      window.location.href = `mailto:vardinoam3@gmail.com?subject=${subject}&body=${body}`;
+
+      form.style.display = 'none';
+      document.getElementById('formSuccess').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
