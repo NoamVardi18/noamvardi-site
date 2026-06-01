@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+} from "recharts";
 import {
   CURRENCIES,
   ASSET_TYPES,
@@ -27,11 +30,52 @@ type Holding = {
   manual_value: number | null;
   usdValue: number;
 };
+type FlatHolding = Holding & { accountName: string };
 type Account = { id: string; name: string; type: string; holdings: Holding[] };
 
 const ASSET_LABEL: Record<string, string> = Object.fromEntries(
   ASSET_TYPES.map((a) => [a.value, a.label])
 );
+
+// Auto-currency per asset type (single ternary — only ILS differs)
+const defaultCurrency = (assetType: string) =>
+  assetType === "stock_il" ? "ILS" : "USD";
+
+// Reusable style for active/inactive toggle buttons
+const toggleStyle = (active: boolean): React.CSSProperties => ({
+  background: active ? "#0a0a0a" : "#f5f5f5",
+  color: active ? "#fff" : "#555",
+  border: "none", borderRadius: 6, padding: "4px 12px",
+  fontSize: 12, fontWeight: 600, cursor: "pointer",
+});
+
+// Custom tooltip for recharts
+function ChartTooltip({ active, payload, label, sym, showPct, baseVal }: {
+  active?: boolean;
+  payload?: { value: number }[];
+  label?: string;
+  sym: string;
+  showPct: boolean;
+  baseVal: number;
+}) {
+  if (!active || !payload?.length) return null;
+  const val = payload[0].value;
+  const pct = baseVal > 0 ? ((val - baseVal) / baseVal) * 100 : 0;
+  return (
+    <div style={{
+      background: "#0a0a0a", color: "#fff", padding: "10px 14px",
+      borderRadius: 8, fontSize: 13, border: "1px solid rgba(255,255,255,0.1)"
+    }}>
+      <div style={{ color: "rgba(255,255,255,0.5)", marginBottom: 4, fontSize: 11 }}>{label}</div>
+      <div style={{ fontWeight: 700, fontSize: 16 }}>
+        {showPct
+          ? `${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`
+          : `${sym}${val.toLocaleString("he-IL", { maximumFractionDigits: 0 })}`
+        }
+      </div>
+    </div>
+  );
+}
 
 export function HubClient({
   userName,
@@ -52,8 +96,11 @@ export function HubClient({
 }) {
   const router = useRouter();
   const [cur, setCur] = useState(baseCurrency);
+  const [showPct, setShowPct] = useState(false);
+  const [sortBy, setSortBy] = useState<"value" | "name">("value");
   const rate = fxFromUsd[cur] ?? 1;
   const sym = CURRENCIES.find((c) => c.code === cur)?.symbol ?? "$";
+  const ilsRate = fxFromUsd["ILS"] ?? 3.7;
 
   const fmt = (usd: number) =>
     `${sym}${(usd * rate).toLocaleString("he-IL", { maximumFractionDigits: 0 })}`;
@@ -70,43 +117,118 @@ export function HubClient({
   const change = prev !== null ? totalUsd - prev : null;
   const changePct = prev && prev > 0 ? ((totalUsd - prev) / prev) * 100 : null;
 
+  // Chart data — memoized so pct transform doesn't re-run on unrelated state changes
+  const chartData = useMemo(() => snapshots.map((s) => ({
+    date: new Date(s.date).toLocaleDateString("he-IL", { day: "numeric", month: "short" }),
+    usd: Math.round(s.usd * rate * 100) / 100,
+  })), [snapshots, rate]);
+
+  const baseVal = chartData.length > 0 ? chartData[0].usd : 0;
+
+  const chartPctData = useMemo(() => chartData.map((d) => ({
+    ...d,
+    pct: baseVal > 0 ? ((d.usd - baseVal) / baseVal) * 100 : 0,
+  })), [chartData, baseVal]);
+
+  // All holdings flat, typed, sorted
+  const allHoldings = useMemo((): FlatHolding[] => {
+    const flat: FlatHolding[] = accounts.flatMap((acc) =>
+      acc.holdings.map((h) => ({ ...h, accountName: acc.name }))
+    );
+    if (sortBy === "value") return [...flat].sort((a, b) => b.usdValue - a.usdValue);
+    return [...flat].sort((a, b) => (a.symbol || a.name || "").localeCompare(b.symbol || b.name || ""));
+  }, [accounts, sortBy]);
+
+  // Top 3 by value — slice when already value-sorted (common case), otherwise sort separately
+  const top3 = useMemo(() =>
+    sortBy === "value"
+      ? allHoldings.slice(0, 3)
+      : [...allHoldings].sort((a, b) => b.usdValue - a.usdValue).slice(0, 3),
+    [allHoldings, sortBy]
+  );
+
   return (
     <main className="page">
       <h1>מרכז הנכסים{userName ? `, ${userName.split(" ")[0]}` : ""}</h1>
       <p className="sub">כל ההשקעות שלך במקום אחד — מניות, קרנות, מטבעות ועוד.</p>
 
-      {/* Total + Graph */}
+      {/* ── Top row: Total + Graph ── */}
       <div className="hub-top">
         <div className="hub-total">
           <span className="lbl">שווי כולל</span>
           <span className="val">{fmt(totalUsd)}</span>
           {change !== null && (
             <span className={`chg ${change >= 0 ? "up" : "down"}`}>
-              {change >= 0 ? "▲" : "▼"} {sym}
-              {Math.abs(change * rate).toLocaleString("he-IL", { maximumFractionDigits: 0 })}
-              {changePct !== null && ` (${changePct.toFixed(1)}%)`} מהביקור הקודם
+              {change >= 0 ? "▲" : "▼"}{" "}
+              {showPct
+                ? `${Math.abs(changePct ?? 0).toFixed(2)}%`
+                : `${sym}${Math.abs(change * rate).toLocaleString("he-IL", { maximumFractionDigits: 0 })}`
+              }{" "}
+              מהביקור הקודם
             </span>
           )}
           <div className="cur-switch" role="group" aria-label="מטבע תצוגה">
             {CURRENCIES.map((c) => (
-              <button
-                key={c.code}
-                className={cur === c.code ? "active" : ""}
-                onClick={() => pickCurrency(c.code)}
-              >
+              <button key={c.code} className={cur === c.code ? "active" : ""} onClick={() => pickCurrency(c.code)}>
                 {c.code}
               </button>
             ))}
           </div>
+          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 10 }}>
+            1 ₪ = ${(1 / ilsRate).toFixed(3)}
+          </div>
         </div>
 
         <div className="hub-graph">
-          <h3>היסטוריית שווי</h3>
-          <Graph snapshots={snapshots} rate={rate} sym={sym} />
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+            <h3 style={{ margin: 0 }}>היסטוריית שווי</h3>
+            <div style={{ display: "flex", gap: 6 }}>
+              <button onClick={() => setShowPct(false)} style={toggleStyle(!showPct)}>
+                {sym} ערך
+              </button>
+              <button onClick={() => setShowPct(true)} style={toggleStyle(showPct)}>
+                % שינוי
+              </button>
+            </div>
+          </div>
+
+          {chartData.length < 2 ? (
+            <p style={{ color: "#9a9a9a", fontSize: 14, paddingTop: 20 }}>
+              הגרף יצטייר לאחר 2 ביקורים — כל יום נשמרת נקודה חדשה.
+            </p>
+          ) : (
+            <ResponsiveContainer width="100%" height={180}>
+              <AreaChart data={showPct ? chartPctData : chartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="hubGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#0a0a0a" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="#0a0a0a" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
+                <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#9a9a9a" }} tickLine={false} axisLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: "#9a9a9a" }} tickLine={false} axisLine={false}
+                  tickFormatter={(v) => showPct ? `${v.toFixed(1)}%` : `${sym}${Math.round(v).toLocaleString()}`}
+                />
+                <Tooltip content={
+                  <ChartTooltip sym={sym} showPct={showPct} baseVal={baseVal} />
+                } />
+                <Area
+                  type="monotone"
+                  dataKey={showPct ? "pct" : "usd"}
+                  stroke="#0a0a0a"
+                  strokeWidth={2.5}
+                  fill="url(#hubGrad)"
+                  dot={false}
+                  activeDot={{ r: 5, fill: "#0a0a0a" }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
 
-      {/* Summary by type */}
+      {/* ── Summary by type ── */}
       <div className="hub-summary">
         {ASSET_TYPES.map((t) => (
           <div className="sum-box" key={t.value}>
@@ -116,7 +238,92 @@ export function HubClient({
         ))}
       </div>
 
-      {/* Accounts */}
+      {/* ── Top holdings ── */}
+      {top3.length > 0 && (
+        <div className="card" style={{ marginBottom: 20 }}>
+          <h3 style={{ marginTop: 0, marginBottom: 16, fontSize: 15 }}>נכסים מובילים</h3>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            {top3.map((h) => {
+              const pctOfTotal = totalUsd > 0 ? (h.usdValue / totalUsd) * 100 : 0;
+              return (
+                <div key={h.id} style={{
+                  flex: "1 1 160px", background: "#f5f5f5", borderRadius: 12,
+                  padding: "16px 18px", border: "1px solid #e8e8e8"
+                }}>
+                  <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 4 }}>
+                    {h.symbol || h.name || "—"}
+                  </div>
+                  <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 4 }}>{fmt(h.usdValue)}</div>
+                  <div style={{ fontSize: 12, color: "#9a9a9a" }}>{pctOfTotal.toFixed(1)}% מהתיק</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── All holdings table (sortable) ── */}
+      {allHoldings.length > 0 && (
+        <div className="card" style={{ marginBottom: 20, padding: 0, overflowX: "auto" }}>
+          <div style={{ padding: "16px 20px", borderBottom: "1px solid #e8e8e8", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <h3 style={{ margin: 0, fontSize: 15 }}>כל האחזקות</h3>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button onClick={() => setSortBy("value")} className="icon-btn" style={toggleStyle(sortBy === "value")}>
+                לפי שווי
+              </button>
+              <button onClick={() => setSortBy("name")} className="icon-btn" style={toggleStyle(sortBy === "name")}>
+                לפי שם
+              </button>
+            </div>
+          </div>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>נכס</th>
+                <th>סוג</th>
+                <th>חשבון</th>
+                <th>כמות</th>
+                <th>שווי ({cur})</th>
+                <th>% מהתיק</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {allHoldings.map((h) => {
+                const pctOfTotal = totalUsd > 0 ? (h.usdValue / totalUsd) * 100 : 0;
+                return (
+                  <tr key={h.id}>
+                    <td style={{ fontWeight: 600 }}>
+                      {h.symbol || h.name || "—"}
+                      {h.name && h.symbol && <span className="muted" style={{ fontSize: 12 }}> · {h.name}</span>}
+                    </td>
+                    <td><span className="pill" style={{ fontSize: 11 }}>{ASSET_LABEL[h.asset_type] ?? h.asset_type}</span></td>
+                    <td className="muted">{h.accountName}</td>
+                    <td>{h.asset_type === "manual" ? "—" : Number(h.quantity).toLocaleString("he-IL", { maximumFractionDigits: 6 })}</td>
+                    <td style={{ fontWeight: 700 }}>{fmt(h.usdValue)}</td>
+                    <td>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <div style={{ width: 40, height: 4, background: "#e8e8e8", borderRadius: 2 }}>
+                          <div style={{ width: `${Math.min(pctOfTotal, 100)}%`, height: "100%", background: "#0a0a0a", borderRadius: 2 }} />
+                        </div>
+                        <span style={{ fontSize: 12, color: "#555" }}>{pctOfTotal.toFixed(1)}%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <form action={deleteHolding}>
+                        <input type="hidden" name="id" value={h.id} />
+                        <button className="icon-btn danger" type="submit">מחק</button>
+                      </form>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* ── Accounts with add holding forms ── */}
       {accounts.length === 0 ? (
         <div className="card empty-state" style={{ padding: 48 }}>
           <p>עדיין לא הוספת חשבונות. התחל בהוספת בית השקעות, ארנק או קרן למטה.</p>
@@ -136,50 +343,12 @@ export function HubClient({
                 <button className="icon-btn danger" type="submit">מחק חשבון</button>
               </form>
             </div>
-
-            {acc.holdings.length > 0 && (
-              <table className="tbl">
-                <thead>
-                  <tr>
-                    <th>נכס</th>
-                    <th>סוג</th>
-                    <th>כמות</th>
-                    <th>שווי ({cur})</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {acc.holdings.map((h) => (
-                    <tr key={h.id}>
-                      <td style={{ fontWeight: 600 }}>
-                        {h.symbol || h.name || "—"}
-                        {h.name && h.symbol && <span className="muted"> · {h.name}</span>}
-                      </td>
-                      <td>{ASSET_LABEL[h.asset_type] ?? h.asset_type}</td>
-                      <td>
-                        {h.asset_type === "manual"
-                          ? "—"
-                          : Number(h.quantity).toLocaleString("he-IL")}
-                      </td>
-                      <td style={{ fontWeight: 700 }}>{fmt(h.usdValue)}</td>
-                      <td>
-                        <form action={deleteHolding}>
-                          <input type="hidden" name="id" value={h.id} />
-                          <button className="icon-btn danger" type="submit">מחק</button>
-                        </form>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-
             <AddHoldingForm accountId={acc.id} onDone={() => router.refresh()} />
           </div>
         ))
       )}
 
-      {/* Add account */}
+      {/* ── Add account ── */}
       <div className="card" style={{ marginTop: 24 }}>
         <h3 style={{ marginTop: 0 }}>הוספת חשבון / בית השקעות / ארנק</h3>
         <form action={addAccount} className="add-row">
@@ -187,9 +356,7 @@ export function HubClient({
             <label>שם החשבון</label>
             <input name="name" list="preset-accounts" placeholder="לדוגמה: מיטב טרייד" required />
             <datalist id="preset-accounts">
-              {PRESET_ACCOUNTS.map((p) => (
-                <option value={p} key={p} />
-              ))}
+              {PRESET_ACCOUNTS.map((p) => <option value={p} key={p} />)}
             </datalist>
           </div>
           <div className="lfg">
@@ -207,28 +374,24 @@ export function HubClient({
   );
 }
 
-function AddHoldingForm({
-  accountId,
-  onDone,
-}: {
-  accountId: string;
-  onDone: () => void;
-}) {
+// ── Add Holding Form ─────────────────────────────────────────────────────────
+function AddHoldingForm({ accountId, onDone }: { accountId: string; onDone: () => void }) {
   const [type, setType] = useState("stock_us");
   const [cryptoId, setCryptoId] = useState("bitcoin");
+
   const needsSymbol = type === "stock_us" || type === "stock_il" || type === "etf";
   const isCash = type === "cash";
   const isManual = type === "manual";
   const isCrypto = type === "crypto";
+  const autoCurrency = defaultCurrency(type);
 
   return (
     <form
       action={async (fd) => {
-        // For crypto: store coingecko id as symbol, coin symbol as name
-        if (type === "crypto") {
+        if (isCrypto) {
           const coin = CRYPTO_COINS.find((c) => c.id === cryptoId);
           fd.set("symbol", cryptoId);
-          if (coin && !fd.get("name")) fd.set("name", `${coin.symbol} – ${coin.name}`);
+          if (coin) fd.set("name", `${coin.symbol} – ${coin.name}`);
         }
         await addHolding(fd);
         onDone();
@@ -237,6 +400,9 @@ function AddHoldingForm({
       style={{ marginTop: 16 }}
     >
       <input type="hidden" name="account_id" value={accountId} />
+      {/* Auto-set currency for non-cash types */}
+      {!isCash && !isManual && <input type="hidden" name="currency" value={autoCurrency} />}
+
       <div className="lfg">
         <label>סוג נכס</label>
         <select name="asset_type" value={type} onChange={(e) => setType(e.target.value)}>
@@ -249,15 +415,9 @@ function AddHoldingForm({
       {isCrypto && (
         <div className="lfg">
           <label>מטבע קריפטו</label>
-          <select
-            name="_crypto_select"
-            value={cryptoId}
-            onChange={(e) => setCryptoId(e.target.value)}
-          >
+          <select value={cryptoId} onChange={(e) => setCryptoId(e.target.value)}>
             {CRYPTO_COINS.map((c) => (
-              <option value={c.id} key={c.id}>
-                {c.symbol} – {c.name}
-              </option>
+              <option value={c.id} key={c.id}>{c.symbol} – {c.name}</option>
             ))}
           </select>
         </div>
@@ -265,10 +425,11 @@ function AddHoldingForm({
 
       {needsSymbol && (
         <div className="lfg">
-          <label>סימול</label>
+          <label>סימול {type === "stock_il" && <span style={{ color: "#9a9a9a", fontSize: 11 }}>(בלי .TA)</span>}</label>
           <input name="symbol" placeholder={type === "stock_il" ? "TEVA" : "AAPL"} dir="ltr" required />
         </div>
       )}
+
       {isManual && (
         <div className="lfg">
           <label>שם הנכס</label>
@@ -282,6 +443,7 @@ function AddHoldingForm({
           <input name="quantity" type="number" step="any" min="0" placeholder="0" required />
         </div>
       )}
+
       {isManual && (
         <div className="lfg">
           <label>שווי נוכחי</label>
@@ -289,66 +451,18 @@ function AddHoldingForm({
         </div>
       )}
 
-      {!isCrypto && (
+      {(isCash || isManual) && (
         <div className="lfg">
           <label>מטבע</label>
-          <select name="currency" defaultValue={type === "stock_il" ? "ILS" : "USD"}>
+          <select name="currency" defaultValue="USD">
             {CURRENCIES.map((c) => (
-              <option value={c.code} key={c.code}>{c.code}</option>
+              <option value={c.code} key={c.code}>{c.code} – {c.label}</option>
             ))}
           </select>
         </div>
       )}
-      {isCrypto && <input type="hidden" name="currency" value="USD" />}
 
       <button className="btn-blk" type="submit">+ הוסף נכס</button>
     </form>
-  );
-}
-
-function Graph({
-  snapshots,
-  rate,
-  sym,
-}: {
-  snapshots: { date: string; usd: number }[];
-  rate: number;
-  sym: string;
-}) {
-  if (snapshots.length < 2) {
-    return (
-      <p className="muted" style={{ fontSize: 14 }}>
-        הגרף יתחיל להצטייר ככל שתחזור לאתר — כל יום נשמרת נקודה חדשה.
-      </p>
-    );
-  }
-  const W = 520, H = 180, pad = 8;
-  const vals = snapshots.map((s) => s.usd * rate);
-  const min = Math.min(...vals), max = Math.max(...vals);
-  const range = max - min || 1;
-  const pts = vals.map((v, i) => {
-    const x = pad + (i / (vals.length - 1)) * (W - pad * 2);
-    const y = H - pad - ((v - min) / range) * (H - pad * 2);
-    return [x, y];
-  });
-  const line = pts.map((p, i) => `${i ? "L" : "M"}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" ");
-  const area = `${line} L${pts[pts.length - 1][0].toFixed(1)},${H - pad} L${pts[0][0].toFixed(1)},${H - pad} Z`;
-  const last = vals[vals.length - 1];
-
-  return (
-    <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} role="img" aria-label="גרף שווי לאורך זמן">
-      <defs>
-        <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="rgba(10,10,10,0.12)" />
-          <stop offset="100%" stopColor="rgba(10,10,10,0)" />
-        </linearGradient>
-      </defs>
-      <path d={area} fill="url(#g)" />
-      <path d={line} fill="none" stroke="#0a0a0a" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-      <circle cx={pts[pts.length - 1][0]} cy={pts[pts.length - 1][1]} r="3.5" fill="#0a0a0a" />
-      <text x={pad} y={14} fontSize="12" fill="#9a9a9a">
-        {sym}{last.toLocaleString("he-IL", { maximumFractionDigits: 0 })}
-      </text>
-    </svg>
   );
 }

@@ -27,6 +27,17 @@ export async function deleteAccount(formData: FormData) {
   revalidatePath("/hub");
 }
 
+const VALID_CURRENCIES = ["USD", "ILS", "EUR", "GBP"] as const;
+
+// Derive canonical currency server-side — don't trust client for auto-currency types
+function canonicalCurrency(assetType: string, clientCurrency: string): string {
+  if (assetType === "stock_il") return "ILS";
+  if (assetType === "stock_us" || assetType === "etf" || assetType === "crypto") return "USD";
+  // cash / manual: validate client value against allowlist
+  const upper = clientCurrency.toUpperCase();
+  return (VALID_CURRENCIES as readonly string[]).includes(upper) ? upper : "USD";
+}
+
 export async function addHolding(formData: FormData) {
   const { supabase, userId } = await uid();
   const accountId = String(formData.get("account_id"));
@@ -34,7 +45,8 @@ export async function addHolding(formData: FormData) {
   const symbolRaw = String(formData.get("symbol") || "").trim();
   const name = String(formData.get("name") || "").trim();
   const quantity = parseFloat(String(formData.get("quantity") || "0")) || 0;
-  const currency = String(formData.get("currency") || "USD");
+  const clientCurrency = String(formData.get("currency") || "USD");
+  const currency = canonicalCurrency(assetType, clientCurrency);
   const manualValue = parseFloat(String(formData.get("manual_value") || "0")) || 0;
 
   const row: Record<string, unknown> = {

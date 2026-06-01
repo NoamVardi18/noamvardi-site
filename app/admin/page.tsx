@@ -80,6 +80,18 @@ export default async function AdminPage() {
             <code> x-automation-secret</code>. ניתן לחבר את Claude Cowork כדי להוסיף מאמר חדש בכל שבוע ללא התערבות.
           </p>
         </div>
+
+        <div className="card" style={{ marginTop: 20 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div>
+              <h3 style={{ marginTop: 0 }}>ניהול משתמשים</h3>
+              <p className="muted" style={{ fontSize: 14, margin: 0 }}>הענקת / שלילת הרשאות אדמין</p>
+            </div>
+            <Link href="/admin/users" className="btn-blk" style={{ textDecoration: "none", padding: "10px 20px" }}>
+              ניהול משתמשים →
+            </Link>
+          </div>
+        </div>
       </main>
       <SiteFooter />
     </>
