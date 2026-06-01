@@ -55,87 +55,89 @@ def hebrew_day_label():
 
 
 # ── Prompts ──────────────────────────────────────────────────────────────────
-DAILY_PROMPT = f"""You are a professional Hebrew financial journalist writing for noamvardi.ai.
+DAILY_PROMPT = f"""You are a senior Hebrew financial journalist at a major Israeli newspaper.
 Today is {hebrew_day_label()}.
 
-Your task: research today's market news and write a 300-450 word daily morning brief in HEBREW.
+TASK: Write a thorough, substantive daily market brief in HEBREW (600-800 words).
 
-Research these topics using the web_search tool:
-1. "stock market today {datetime.now().strftime('%B %d %Y')}" — pre-market, futures, overnight moves
-2. "BTC ETH crypto price today" — current prices and 24h change
-3. "economic news today {datetime.now().strftime('%B %d %Y')}" — earnings, Fed, macro
-4. "חדשות כלכליות היום" — Israeli economic news
-5. "AI tech news today {datetime.now().strftime('%B %d %Y')}" — major AI announcements
+RESEARCH STEPS — do all 4 searches, then read the actual article content from the results:
+1. Search "market update {datetime.now().strftime('%B %d %Y')} site:reuters.com OR site:bloomberg.com OR site:cnbc.com" — read the full articles, extract real numbers and quotes.
+2. Search "bitcoin ethereum price {datetime.now().strftime('%B %d %Y')}" — get exact prices and % moves.
+3. Search "Israel economy stocks {datetime.now().strftime('%B %d %Y')}" — TA-35 moves, shekel rate.
+4. Search "AI artificial intelligence news {datetime.now().strftime('%B %d %Y')}" — any market-moving announcements.
 
-Write the article in HEBREW with these sections:
+WRITING RULES:
+- Use REAL numbers from the articles you read — exact index levels, % changes, prices.
+- Quote analysts or executives by name if you found quotes in the articles.
+- Minimum 600 words. If there is little news, add context and analysis.
+- Paragraph style — no bullet lists, no emojis.
+- Hebrew only (section headers in Hebrew too).
+
+SECTIONS:
 ## פתיחת השווקים
-מה צפוי היום בוול סטריט ות"א — פוצ'רס ומגמה כללית.
+פוצ'רס, ביצועי אסיה/אירופה, מגמת ת"א — עם מספרים ספציפיים.
 
 ## קריפטו
-BTC ו-ETH — מחיר נוכחי ושינוי 24 שעות.
+BTC ו-ETH — מחיר מדויק ושינוי 24 שעות. מה מניע את השוק.
 
-## נקודות מפתח
-2-3 חדשות כלכליות או טכנולוגיות חשובות להיום.
+## הסיפור הגדול של היום
+החדשה הכלכלית/גיאופוליטית/טכנולוגית החשובה ביותר — ניתוח מעמיק עם רקע.
 
-## מה לעקוב
-אירועים מתוכננים היום: נתוני מאקרו, דוחות, ישיבות פד.
+## נקודות נוספות לעקוב
+2-3 חדשות נוספות עם הסבר קצר לכל אחת.
 
-Rules:
-- Hebrew only, professional and direct
-- Accurate numbers only — if uncertain, describe trend without number
-- No emojis, no bullet lists
-- Paragraphs separated by blank lines
+## לוח האירועים
+נתוני מאקרו, דוחות חברות, ישיבות פד שצפויים היום.
 
-After writing, output ONLY a JSON object (no markdown, no extra text):
+After writing, output ONLY a valid JSON object:
 {{
   "title": "עדכון שווקים — {hebrew_day_label()}",
-  "excerpt": "<one sentence summary>",
-  "body": "<full article>"
-}}
-"""
+  "excerpt": "<two sentences capturing today's dominant theme>",
+  "body": "<full article, 600-800 words>"
+}}"""
 
-WEEKLY_PROMPT = f"""You are a professional Hebrew financial journalist with 20 years of experience in AI and investments, writing for noamvardi.ai.
-Today is {hebrew_day_label()} — summarize the past week's events.
+WEEKLY_PROMPT = f"""You are a senior Hebrew financial analyst writing the weekly column for noamvardi.ai.
+Today is {hebrew_day_label()}.
 
-Research these topics using the web_search tool:
-1. "weekly stock market recap {datetime.now().strftime('%B %Y')}" — S&P500, Nasdaq, Dow
-2. "AI news this week {datetime.now().strftime('%B %Y')}" — tools, funding, model releases
-3. "geopolitical tensions markets this week" — wars, conflicts, market impact
-4. "crypto market weekly BTC ETH {datetime.now().strftime('%B %Y')}"
-5. "ביצועי שוק ישראל שבוע ת״א 35"
-6. "earnings reports this week {datetime.now().strftime('%B %Y')}"
+TASK: Write a comprehensive weekly market review in HEBREW (900-1200 words).
 
-Write a 600-900 word article in HEBREW with these sections:
-## תמונת מצב — השוק האמריקאי
-ביצועי S&P500, Nasdaq, Dow השבוע. מה הניע, מה הפתיע.
+RESEARCH STEPS — search, then read the actual full articles:
+1. Search "weekly market recap {datetime.now().strftime('%B %Y')} site:reuters.com OR site:bloomberg.com" — read articles, get exact weekly % changes.
+2. Search "S&P 500 Nasdaq weekly performance {datetime.now().strftime('%B %d %Y')}" — exact numbers.
+3. Search "bitcoin weekly performance {datetime.now().strftime('%B %Y')}" — crypto week in review.
+4. Search "AI news week {datetime.now().strftime('%B %Y')} funding models announcements" — biggest AI stories.
+
+WRITING RULES:
+- REAL numbers only — exact index levels, weekly % changes, market caps.
+- Name-drop companies, CEOs, analysts when relevant.
+- Minimum 900 words. Analyze WHY things moved, not just WHAT moved.
+- Hebrew only. Professional newspaper style.
+
+SECTIONS:
+## תמונת המצב — השוק האמריקאי
+S&P500, Nasdaq, Dow — ביצועים שבועיים עם מספרים. הסבר למה.
 
 ## שוק ההון הישראלי
-ביצועי ת"א 35 ות"א 125. אירועים מקומיים שהשפיעו.
+ת"א 35, שקל/דולר, אירועים מקומיים שהשפיעו.
 
 ## קריפטו
-BTC ו-ETH השבוע — עליות, ירידות, נרטיב השוק.
+BTC ו-ETH — ביצועים שבועיים, נרטיב השוק, נפח מסחר.
 
-## בינה מלאכותית — החדשות שמשנות את המשחק
-כלים חדשים, עסקאות, מודלים, הודעות שהשפיעו על מניות AI.
+## בינה מלאכותית
+החדשות הגדולות של השבוע — עסקאות, מודלים, חברות. למה זה חשוב לשוק.
 
-## גיאופוליטיקה והשווקים
-מלחמות ומתחים שהשפיעו על שווקים גלובליים. אם אין אירועים משמעותיים, השמט סעיף זה.
+## גיאופוליטיקה
+השפעת אירועים גלובליים על שווקים. השמט אם שקט.
 
 ## מבט לשבוע הבא
-3-4 אירועים שכדאי לעקוב: דוחות, פד, מאקרו, גיאופוליטיקה.
+דוחות, פד, נתוני מאקרו — מה להכין.
 
-Rules:
-- Hebrew only, natural expert voice
-- No emojis, no bullet lists
-- Paragraphs separated by blank lines
-
-After writing, output ONLY a JSON object (no markdown, no extra text):
+After writing, output ONLY a valid JSON object:
 {{
-  "title": "<compelling Hebrew headline reflecting the week's dominant theme>",
-  "excerpt": "<1-2 sentence summary of the week>",
-  "body": "<full article>"
-}}
-"""
+  "title": "<compelling Hebrew headline — the week's defining theme>",
+  "excerpt": "<2-3 sentences capturing the week>",
+  "body": "<full article, 900-1200 words>"
+}}"""
 
 # ── Main ─────────────────────────────────────────────────────────────────────
 def main():
@@ -144,11 +146,20 @@ def main():
 
     print(f"[{ARTICLE_TYPE.upper()}] Researching and writing article...")
 
+    max_searches = 4 if ARTICLE_TYPE == "daily" else 5
+
     response = client.messages.create(
         model="claude-sonnet-4-5",
-        max_tokens=4096,
-        tools=[{"type": "web_search_20250305", "name": "web_search", "max_uses": 8}],
-        messages=[{"role": "user", "content": prompt}],
+        max_tokens=2048,
+        tools=[{"type": "web_search_20250305", "name": "web_search", "max_uses": max_searches}],
+        messages=[{
+            "role": "user",
+            "content": [{
+                "type": "text",
+                "text": prompt,
+                "cache_control": {"type": "ephemeral"},
+            }],
+        }],
     )
 
     # Extract the final text block
