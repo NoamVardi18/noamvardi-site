@@ -1,0 +1,53 @@
+name: Publish Hebrew Market Articles
+
+on:
+  schedule:
+    # Daily brief — every day at 07:00 Israel time (04:00 UTC)
+    - cron: "0 4 * * *"
+    # Weekly summary — every Sunday at 20:00 Israel time (17:00 UTC)
+    - cron: "0 17 * * 0"
+  workflow_dispatch:
+    inputs:
+      article_type:
+        description: "Article type"
+        required: true
+        default: "daily"
+        type: choice
+        options:
+          - daily
+          - weekly
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install anthropic requests
+
+      - name: Determine article type
+        id: type
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "ARTICLE_TYPE=${{ github.event.inputs.article_type }}" >> $GITHUB_ENV
+          elif [ "$(date +%u)" = "7" ]; then
+            # Sunday = weekly summary
+            echo "ARTICLE_TYPE=weekly" >> $GITHUB_ENV
+          else
+            echo "ARTICLE_TYPE=daily" >> $GITHUB_ENV
+          fi
+
+      - name: Publish article
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          AUTOMATION_SECRET: ${{ secrets.AUTOMATION_SECRET }}
+          ARTICLE_TYPE: ${{ env.ARTICLE_TYPE }}
+        run: python publish_article.py
