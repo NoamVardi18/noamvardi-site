@@ -7,6 +7,7 @@ import {
   ASSET_TYPES,
   ACCOUNT_TYPES,
   PRESET_ACCOUNTS,
+  CRYPTO_COINS,
 } from "@/lib/constants";
 import {
   addAccount,
@@ -214,13 +215,21 @@ function AddHoldingForm({
   onDone: () => void;
 }) {
   const [type, setType] = useState("stock_us");
+  const [cryptoId, setCryptoId] = useState("bitcoin");
   const needsSymbol = type === "stock_us" || type === "stock_il" || type === "etf";
   const isCash = type === "cash";
   const isManual = type === "manual";
+  const isCrypto = type === "crypto";
 
   return (
     <form
       action={async (fd) => {
+        // For crypto: store coingecko id as symbol, coin symbol as name
+        if (type === "crypto") {
+          const coin = CRYPTO_COINS.find((c) => c.id === cryptoId);
+          fd.set("symbol", cryptoId);
+          if (coin && !fd.get("name")) fd.set("name", `${coin.symbol} – ${coin.name}`);
+        }
         await addHolding(fd);
         onDone();
       }}
@@ -236,6 +245,23 @@ function AddHoldingForm({
           ))}
         </select>
       </div>
+
+      {isCrypto && (
+        <div className="lfg">
+          <label>מטבע קריפטו</label>
+          <select
+            name="_crypto_select"
+            value={cryptoId}
+            onChange={(e) => setCryptoId(e.target.value)}
+          >
+            {CRYPTO_COINS.map((c) => (
+              <option value={c.id} key={c.id}>
+                {c.symbol} – {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {needsSymbol && (
         <div className="lfg">
@@ -263,14 +289,17 @@ function AddHoldingForm({
         </div>
       )}
 
-      <div className="lfg">
-        <label>מטבע</label>
-        <select name="currency" defaultValue={type === "stock_il" ? "ILS" : "USD"}>
-          {CURRENCIES.map((c) => (
-            <option value={c.code} key={c.code}>{c.code}</option>
-          ))}
-        </select>
-      </div>
+      {!isCrypto && (
+        <div className="lfg">
+          <label>מטבע</label>
+          <select name="currency" defaultValue={type === "stock_il" ? "ILS" : "USD"}>
+            {CURRENCIES.map((c) => (
+              <option value={c.code} key={c.code}>{c.code}</option>
+            ))}
+          </select>
+        </div>
+      )}
+      {isCrypto && <input type="hidden" name="currency" value="USD" />}
 
       <button className="btn-blk" type="submit">+ הוסף נכס</button>
     </form>

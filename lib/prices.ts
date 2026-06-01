@@ -1,5 +1,5 @@
 // Price & FX providers (all free tiers).
-// FX: Frankfurter (ECB).  US stocks/ETF: Finnhub.  IL stocks: Yahoo Finance (.TA).
+// FX: Frankfurter (ECB).  US stocks/ETF: Finnhub.  IL stocks: Yahoo Finance (.TA).  Crypto: CoinGecko (no key).
 
 export type Quote = { price: number; currency: string };
 
@@ -67,6 +67,27 @@ async function finnhubQuote(symbol: string): Promise<Quote | null> {
   return null;
 }
 
+// CoinGecko – no API key required, 30 req/min free.
+async function cryptoQuotes(ids: string[]): Promise<Record<string, Quote>> {
+  if (!ids.length) return {};
+  try {
+    const joined = ids.join(",");
+    const res = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${encodeURIComponent(joined)}&vs_currencies=usd`,
+      { next: { revalidate: 120 } }
+    );
+    const j = await res.json();
+    const out: Record<string, Quote> = {};
+    for (const [id, val] of Object.entries(j)) {
+      const price = (val as { usd: number }).usd;
+      if (typeof price === "number") out[id] = { price, currency: "USD" };
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
 async function yahooQuote(symbol: string): Promise<Quote | null> {
   // TASE symbols use a .TA suffix on Yahoo. Prices may come in agorot (ILA).
   const sym = symbol.toUpperCase().endsWith(".TA") ? symbol : `${symbol}.TA`;
@@ -92,13 +113,17 @@ async function yahooQuote(symbol: string): Promise<Quote | null> {
   return null;
 }
 
-// Fetch a quote for a holding symbol given its asset type.
+// Fetch a single quote for a holding symbol given its asset type.
 export async function getQuote(
   assetType: string,
   symbol: string | null
 ): Promise<Quote | null> {
   if (!symbol) return null;
   if (assetType === "stock_il") return yahooQuote(symbol);
+  if (assetType === "crypto") {
+    const m = await cryptoQuotes([symbol.toLowerCase()]);
+    return m[symbol.toLowerCase()] ?? null;
+  }
   // stock_us, etf
   return finnhubQuote(symbol);
 }
@@ -108,22 +133,45 @@ export async function getQuotes(
   holdings: { asset_type: string; symbol: string | null }[]
 ): Promise<Record<string, Quote>> {
   const targets = new Map<string, { asset_type: string; symbol: string }>();
+  const cryptoIds: string[] = [];
+
   for (const h of holdings) {
-    if ((h.asset_type === "stock_us" || h.asset_type === "etf" || h.asset_type === "stock_il") && h.symbol) {
+    if (!h.symbol) continue;
+    if (h.asset_type === "crypto") {
+      // symbol stored as coingecko id (e.g. "bitcoin")
+      if (!cryptoIds.includes(h.symbol.toLowerCase())) {
+        cryptoIds.push(h.symbol.toLowerCase());
+      }
+    } else if (
+      h.asset_type === "stock_us" ||
+      h.asset_type === "etf" ||
+      h.asset_type === "stock_il"
+    ) {
       targets.set(`${h.asset_type}:${h.symbol.toUpperCase()}`, {
         asset_type: h.asset_type,
         symbol: h.symbol,
       });
     }
   }
-  const entries = await Promise.all(
-    [...targets.entries()].map(async ([key, t]) => {
+
+  // Fetch crypto in one batch + other quotes in parallel
+  const [cryptoMap, ...stockEntries] = await Promise.all([
+    cryptoQuotes(cryptoIds),
+    ...[...targets.entries()].map(async ([key, t]) => {
       const q = await getQuote(t.asset_type, t.symbol);
       return [key, q] as const;
-    })
-  );
+    }),
+  ]);
+
   const out: Record<string, Quote> = {};
-  for (const [key, q] of entries) if (q) out[key] = q;
+  // Crypto keyed as "crypto:<coingecko-id>"
+  for (const [id, q] of Object.entries(cryptoMap)) {
+    out[`crypto:${id}`] = q;
+  }
+  for (const entry of stockEntries) {
+    const [key, q] = entry as [string, Quote | null];
+    if (q) out[key] = q;
+  }
   return out;
 }
 
@@ -138,7 +186,10 @@ export function holdingNativeValue(
   if (h.asset_type === "manual") {
     return { value: Number(h.manual_value) || 0, currency: h.currency };
   }
-  const key = `${h.asset_type}:${(h.symbol || "").toUpperCase()}`;
+  // Crypto keyed lowercase; stocks keyed uppercase
+  const key = h.asset_type === "crypto"
+    ? `crypto:${(h.symbol || "").toLowerCase()}`
+    : `${h.asset_type}:${(h.symbol || "").toUpperCase()}`;
   const q = quotes[key];
   if (!q) return { value: 0, currency: h.currency };
   return { value: (Number(h.quantity) || 0) * q.price, currency: q.currency };

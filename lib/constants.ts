@@ -19,9 +19,31 @@ export const ASSET_TYPES = [
   { value: "stock_us", label: "מניה אמריקאית" },
   { value: "stock_il", label: "מניה ישראלית (TASE)" },
   { value: "etf", label: "קרן סל / ETF" },
+  { value: "crypto", label: "קריפטו / מטבע דיגיטלי" },
   { value: "cash", label: "מזומן / מטבע" },
   { value: "manual", label: "ערך ידני (קופ\"ג / קרן השתלמות)" },
 ] as const;
+
+// CoinGecko IDs for popular coins (symbol → coingecko-id)
+export const CRYPTO_COINS: { symbol: string; name: string; id: string }[] = [
+  { symbol: "BTC",  name: "Bitcoin",       id: "bitcoin" },
+  { symbol: "ETH",  name: "Ethereum",      id: "ethereum" },
+  { symbol: "SOL",  name: "Solana",        id: "solana" },
+  { symbol: "BNB",  name: "BNB",           id: "binancecoin" },
+  { symbol: "XRP",  name: "XRP",           id: "ripple" },
+  { symbol: "ADA",  name: "Cardano",       id: "cardano" },
+  { symbol: "DOGE", name: "Dogecoin",      id: "dogecoin" },
+  { symbol: "MATIC",name: "Polygon",       id: "matic-network" },
+  { symbol: "DOT",  name: "Polkadot",      id: "polkadot" },
+  { symbol: "AVAX", name: "Avalanche",     id: "avalanche-2" },
+  { symbol: "LINK", name: "Chainlink",     id: "chainlink" },
+  { symbol: "UNI",  name: "Uniswap",       id: "uniswap" },
+  { symbol: "LTC",  name: "Litecoin",      id: "litecoin" },
+  { symbol: "ATOM", name: "Cosmos",        id: "cosmos" },
+  { symbol: "TRX",  name: "TRON",          id: "tron" },
+  { symbol: "USDT", name: "Tether (USDT)", id: "tether" },
+  { symbol: "USDC", name: "USD Coin",      id: "usd-coin" },
+];
 
 export const ACCOUNT_TYPES = [
   { value: "broker", label: "בית השקעות" },
