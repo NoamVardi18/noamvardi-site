@@ -145,7 +145,7 @@ def main():
     print(f"[{ARTICLE_TYPE.upper()}] Researching and writing article...")
 
     response = client.messages.create(
-        model="claude-opus-4-6",
+        model="claude-sonnet-4-5",
         max_tokens=4096,
         tools=[{"type": "web_search_20250305", "name": "web_search", "max_uses": 8}],
         messages=[{"role": "user", "content": prompt}],
