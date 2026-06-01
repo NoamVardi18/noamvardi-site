@@ -2,12 +2,16 @@ import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 
 function slugify(s: string) {
+  // Keep only ASCII letters/numbers — strips Hebrew so URLs stay clean
   const base = s
     .trim()
     .toLowerCase()
-    .replace(/[^֐-׿a-z0-9\s-]/g, "")
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .trim()
     .replace(/\s+/g, "-")
-    .slice(0, 60);
+    .replace(/-+/g, "-")
+    .slice(0, 60)
+    .replace(/^-|-$/g, "");
   return `${base || "article"}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
