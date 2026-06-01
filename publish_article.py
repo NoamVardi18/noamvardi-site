@@ -153,23 +153,40 @@ def main():
 
     # Extract the final text block
     article_json = None
+    full_text = ""
     for block in reversed(response.content):
-        if block.type == "text":
+        if block.type == "text" and block.text.strip():
+            full_text = block.text.strip()
+            break
+
+    if full_text:
+        # Try multiple extraction strategies
+        import re
+        candidates = []
+
+        # 1. Direct parse
+        candidates.append(full_text)
+
+        # 2. Strip ```json ... ``` fences
+        fence = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", full_text, re.DOTALL)
+        if fence:
+            candidates.append(fence.group(1))
+
+        # 3. Find first { ... } JSON blob
+        brace = re.search(r"(\{[\s\S]*\})", full_text)
+        if brace:
+            candidates.append(brace.group(1))
+
+        for candidate in candidates:
             try:
-                # Strip possible markdown fences
-                text = block.text.strip()
-                if text.startswith("```"):
-                    text = text.split("```")[1]
-                    if text.startswith("json"):
-                        text = text[4:]
-                article_json = json.loads(text.strip())
+                article_json = json.loads(candidate.strip())
                 break
             except json.JSONDecodeError:
                 continue
 
     if not article_json:
         print("ERROR: Could not parse JSON from model response.")
-        print("Raw response:", response.content)
+        print("Raw response:", full_text[:2000])
         sys.exit(1)
 
     payload = {
