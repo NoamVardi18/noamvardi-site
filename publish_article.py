@@ -89,7 +89,7 @@ BTC ו-ETH — מחיר מדויק ושינוי 24 שעות. מה מניע את 
 ## לוח האירועים
 נתוני מאקרו, דוחות חברות, ישיבות פד שצפויים היום.
 
-After writing, output ONLY a valid JSON object:
+After writing, output ONLY a valid JSON object — no preamble, no explanation, no markdown fences. Start your response with `{{` and end with `}}`.
 {{
   "title": "עדכון שווקים — {hebrew_day_label()}",
   "excerpt": "<two sentences capturing today's dominant theme>",
@@ -132,7 +132,7 @@ BTC ו-ETH — ביצועים שבועיים, נרטיב השוק, נפח מסח
 ## מבט לשבוע הבא
 דוחות, פד, נתוני מאקרו — מה להכין.
 
-After writing, output ONLY a valid JSON object:
+After writing, output ONLY a valid JSON object — no preamble, no explanation, no markdown fences. Start your response with `{{` and end with `}}`.
 {{
   "title": "<compelling Hebrew headline — the week's defining theme>",
   "excerpt": "<2-3 sentences capturing the week>",
@@ -149,8 +149,8 @@ def main():
     max_searches = 4 if ARTICLE_TYPE == "daily" else 5
 
     response = client.messages.create(
-        model="claude-sonnet-4-5",
-        max_tokens=2048,
+        model="claude-sonnet-4-6",
+        max_tokens=8192,
         tools=[{"type": "web_search_20250305", "name": "web_search", "max_uses": max_searches}],
         messages=[{
             "role": "user",
@@ -179,7 +179,7 @@ def main():
         candidates.append(full_text)
 
         # 2. Strip ```json ... ``` fences
-        fence = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", full_text, re.DOTALL)
+        fence = re.search(r"```(?:json)?\s*(\{[\s\S]*\})\s*```", full_text)
         if fence:
             candidates.append(fence.group(1))
 
