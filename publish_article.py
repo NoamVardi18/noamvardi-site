@@ -60,11 +60,10 @@ Today is {hebrew_day_label()}.
 
 TASK: Write a thorough, substantive daily market brief in HEBREW (600-800 words).
 
-RESEARCH STEPS — do all 4 searches, then read the actual article content from the results:
-1. Search "market update {datetime.now().strftime('%B %d %Y')} site:reuters.com OR site:bloomberg.com OR site:cnbc.com" — read the full articles, extract real numbers and quotes.
-2. Search "bitcoin ethereum price {datetime.now().strftime('%B %d %Y')}" — get exact prices and % moves.
-3. Search "Israel economy stocks {datetime.now().strftime('%B %d %Y')}" — TA-35 moves, shekel rate.
-4. Search "AI artificial intelligence news {datetime.now().strftime('%B %d %Y')}" — any market-moving announcements.
+RESEARCH STEPS — do all 3 searches, then read the actual article content from the results:
+1. Search "market update {datetime.now().strftime('%B %d %Y')} S&P Nasdaq" — read the articles, extract real numbers and quotes.
+2. Search "bitcoin ethereum price Israel stocks shekel {datetime.now().strftime('%B %d %Y')}" — get exact prices and TA-35 data.
+3. Search "AI tech news {datetime.now().strftime('%B %d %Y')}" — any market-moving announcements.
 
 WRITING RULES:
 - Use REAL numbers from the articles you read — exact index levels, % changes, prices.
@@ -72,6 +71,7 @@ WRITING RULES:
 - Minimum 600 words. If there is little news, add context and analysis.
 - Paragraph style — no bullet lists, no emojis.
 - Hebrew only (section headers in Hebrew too).
+- CRITICAL: Do NOT include any <cite> tags, [1], [[1]], footnotes, citation markers, or any HTML/XML markup anywhere in the output — clean plain text only.
 
 SECTIONS:
 ## פתיחת השווקים
@@ -89,11 +89,11 @@ BTC ו-ETH — מחיר מדויק ושינוי 24 שעות. מה מניע את 
 ## לוח האירועים
 נתוני מאקרו, דוחות חברות, ישיבות פד שצפויים היום.
 
-After writing, output ONLY a valid JSON object:
+Output ONLY a valid JSON object — no preamble, no explanation, no markdown fences. Your ENTIRE response must be only the JSON below, starting with {{ and ending with }}:
 {{
   "title": "עדכון שווקים — {hebrew_day_label()}",
   "excerpt": "<two sentences capturing today's dominant theme>",
-  "body": "<full article, 600-800 words>"
+  "body": "<full article, 600-800 words, plain text only, no citation tags>"
 }}"""
 
 WEEKLY_PROMPT = f"""You are a senior Hebrew financial analyst writing the weekly column for noamvardi.ai.
@@ -102,16 +102,16 @@ Today is {hebrew_day_label()}.
 TASK: Write a comprehensive weekly market review in HEBREW (900-1200 words).
 
 RESEARCH STEPS — search, then read the actual full articles:
-1. Search "weekly market recap {datetime.now().strftime('%B %Y')} site:reuters.com OR site:bloomberg.com" — read articles, get exact weekly % changes.
-2. Search "S&P 500 Nasdaq weekly performance {datetime.now().strftime('%B %d %Y')}" — exact numbers.
-3. Search "bitcoin weekly performance {datetime.now().strftime('%B %Y')}" — crypto week in review.
-4. Search "AI news week {datetime.now().strftime('%B %Y')} funding models announcements" — biggest AI stories.
+1. Search "weekly market recap {datetime.now().strftime('%B %Y')} S&P Nasdaq performance" — read articles, get exact weekly % changes.
+2. Search "bitcoin weekly {datetime.now().strftime('%B %Y')} Israel stocks TA-35 shekel" — crypto and Israeli market week in review.
+3. Search "AI tech news week {datetime.now().strftime('%B %Y')} announcements funding" — biggest AI stories.
 
 WRITING RULES:
 - REAL numbers only — exact index levels, weekly % changes, market caps.
 - Name-drop companies, CEOs, analysts when relevant.
 - Minimum 900 words. Analyze WHY things moved, not just WHAT moved.
 - Hebrew only. Professional newspaper style.
+- CRITICAL: Do NOT include any <cite> tags, [1], [[1]], footnotes, citation markers, or any HTML/XML markup anywhere — clean plain text only.
 
 SECTIONS:
 ## תמונת המצב — השוק האמריקאי
@@ -132,11 +132,11 @@ BTC ו-ETH — ביצועים שבועיים, נרטיב השוק, נפח מסח
 ## מבט לשבוע הבא
 דוחות, פד, נתוני מאקרו — מה להכין.
 
-After writing, output ONLY a valid JSON object:
+Output ONLY a valid JSON object — no preamble, no explanation, no markdown fences. Your ENTIRE response must be only the JSON below, starting with {{ and ending with }}:
 {{
   "title": "<compelling Hebrew headline — the week's defining theme>",
   "excerpt": "<2-3 sentences capturing the week>",
-  "body": "<full article, 900-1200 words>"
+  "body": "<full article, 900-1200 words, plain text only, no citation tags>"
 }}"""
 
 # ── Main ─────────────────────────────────────────────────────────────────────
@@ -146,11 +146,11 @@ def main():
 
     print(f"[{ARTICLE_TYPE.upper()}] Researching and writing article...")
 
-    max_searches = 4 if ARTICLE_TYPE == "daily" else 5
+    max_searches = 3
 
     response = client.messages.create(
-        model="claude-sonnet-4-5",
-        max_tokens=2048,
+        model="claude-sonnet-4-6",
+        max_tokens=16000,
         tools=[{"type": "web_search_20250305", "name": "web_search", "max_uses": max_searches}],
         messages=[{
             "role": "user",
@@ -179,7 +179,7 @@ def main():
         candidates.append(full_text)
 
         # 2. Strip ```json ... ``` fences
-        fence = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", full_text, re.DOTALL)
+        fence = re.search(r"```(?:json)?\s*(\{[\s\S]*\})\s*```", full_text)
         if fence:
             candidates.append(fence.group(1))
 
@@ -197,8 +197,19 @@ def main():
 
     if not article_json:
         print("ERROR: Could not parse JSON from model response.")
-        print("Raw response:", full_text[:2000])
+        print("Raw response (first 4000 chars):", full_text[:4000])
         sys.exit(1)
+
+    # Strip any citation tags the model may have included despite instructions
+    import re as _re
+    def strip_citations(text):
+        text = _re.sub(r'<cite[^>]*>.*?</cite>', '', text, flags=_re.DOTALL | _re.IGNORECASE)
+        text = _re.sub(r'<cite[^>]*/>', '', text, flags=_re.IGNORECASE)
+        text = _re.sub(r'\[\d+\]', '', text)
+        return text.strip()
+
+    article_json["body"] = strip_citations(article_json.get("body", ""))
+    article_json["excerpt"] = strip_citations(article_json.get("excerpt", ""))
 
     payload = {
         "title": article_json["title"],
