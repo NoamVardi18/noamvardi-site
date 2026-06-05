@@ -31,7 +31,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install anthropic requests
+        run: pip install google-genai requests
 
       - name: Determine article type
         id: type
@@ -47,7 +47,7 @@ jobs:
 
       - name: Publish article
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           AUTOMATION_SECRET: ${{ secrets.AUTOMATION_SECRET }}
           ARTICLE_TYPE: ${{ env.ARTICLE_TYPE }}
         run: python publish_article.py
