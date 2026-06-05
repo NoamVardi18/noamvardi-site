@@ -2,23 +2,25 @@
 publish_article.py
 ------------------
 Researches current news and publishes a Hebrew market article to noamvardi.ai.
-Requires: pip install anthropic requests
+Requires: pip install google-genai requests
 
 Environment variables:
-  ANTHROPIC_API_KEY      — your Anthropic API key
+  GEMINI_API_KEY         — Google Gemini API key
   AUTOMATION_SECRET      — x-automation-secret for the site API
   ARTICLE_TYPE           — "daily" or "weekly" (default: "daily")
 """
 
-import anthropic
+from google import genai
+from google.genai import types
 import requests
 import json
 import os
 import sys
+import re
 from datetime import datetime, timezone, timedelta
 
 # ── Config ──────────────────────────────────────────────────────────────────
-ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
+GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
 AUTOMATION_SECRET = os.environ["AUTOMATION_SECRET"]
 ARTICLE_TYPE = os.environ.get("ARTICLE_TYPE", "daily")
 API_URL = "https://noamvardi-site.vercel.app/api/automation/articles"
@@ -34,182 +36,153 @@ COVER_IMAGES = [
     "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=1200&q=80",
 ]
 
-# ── Helpers ──────────────────────────────────────────────────────────────────
+
 def get_cover_image():
-    day = datetime.now().day
-    idx = (day % 8) - 1
-    if idx < 0:
-        idx = 7
-    return COVER_IMAGES[idx]
+    idx = (datetime.now().day % 8) - 1
+    return COVER_IMAGES[idx if idx >= 0 else 7]
 
 
 def hebrew_day_label():
-    """Returns e.g. 'יום שני 2 יוני 2026'"""
     israel_tz = timezone(timedelta(hours=3))
     now = datetime.now(israel_tz)
-    days_he = ["יום שני", "יום שלישי", "יום רביעי", "יום חמישי", "יום שישי", "יום שבת", "יום ראשון"]
-    months_he = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני",
-                 "יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"]
-    day_name = days_he[now.weekday()]
-    return f"{day_name} {now.day} {months_he[now.month - 1]} {now.year}"
+    days_he = ["יום שני", "יום שלישי", "יום רביעי", "יום חמישי",
+               "יום שישי", "יום שבת", "יום ראשון"]
+    months_he = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני",
+                 "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"]
+    return f"{days_he[now.weekday()]} {now.day} {months_he[now.month - 1]} {now.year}"
 
 
 # ── Prompts ──────────────────────────────────────────────────────────────────
-DAILY_PROMPT = f"""You are a senior Hebrew financial journalist at a major Israeli newspaper.
+DAILY_PROMPT = f"""You are a senior Hebrew financial journalist.
 Today is {hebrew_day_label()}.
 
-TASK: Write a thorough, substantive daily market brief in HEBREW (600-800 words).
+Search the web for today's market news and write a thorough daily market brief in HEBREW (600-800 words).
 
-RESEARCH STEPS — do all 3 searches, then read the actual article content from the results:
-1. Search "market update {datetime.now().strftime('%B %d %Y')} S&P Nasdaq" — read the articles, extract real numbers and quotes.
-2. Search "bitcoin ethereum price Israel stocks shekel {datetime.now().strftime('%B %d %Y')}" — get exact prices and TA-35 data.
-3. Search "AI tech news {datetime.now().strftime('%B %d %Y')}" — any market-moving announcements.
+FIND AND REPORT:
+- S&P 500, Nasdaq, Dow Jones — exact levels and % changes
+- Bitcoin and Ethereum — exact prices and 24h % changes
+- Tel Aviv TA-35 index and shekel/dollar rate
+- The biggest market-moving story today with deep context on WHY it happened
 
 WRITING RULES:
-- Use REAL numbers from the articles you read — exact index levels, % changes, prices.
-- Quote analysts or executives by name if you found quotes in the articles.
-- Minimum 600 words. If there is little news, add context and analysis.
-- Paragraph style — no bullet lists, no emojis.
-- Hebrew only (section headers in Hebrew too).
-- CRITICAL: Do NOT include any <cite> tags, [1], [[1]], footnotes, citation markers, or any HTML/XML markup anywhere in the output — clean plain text only.
+- Real numbers from your searches only
+- Explain WHY things moved — causes, not just effects
+- Paragraph style, no bullet points, no emojis
+- Hebrew only throughout
 
-SECTIONS:
+SECTIONS (use ## for headers):
 ## פתיחת השווקים
-פוצ'רס, ביצועי אסיה/אירופה, מגמת ת"א — עם מספרים ספציפיים.
-
 ## קריפטו
-BTC ו-ETH — מחיר מדויק ושינוי 24 שעות. מה מניע את השוק.
-
 ## הסיפור הגדול של היום
-החדשה הכלכלית/גיאופוליטית/טכנולוגית החשובה ביותר — ניתוח מעמיק עם רקע.
-
 ## נקודות נוספות לעקוב
-2-3 חדשות נוספות עם הסבר קצר לכל אחת.
-
 ## לוח האירועים
-נתוני מאקרו, דוחות חברות, ישיבות פד שצפויים היום.
 
-Output ONLY a valid JSON object — no preamble, no explanation, no markdown fences. Your ENTIRE response must be only the JSON below, starting with {{ and ending with }}:
+OUTPUT FORMAT — your ENTIRE response must be exactly this JSON and nothing else:
 {{
   "title": "עדכון שווקים — {hebrew_day_label()}",
-  "excerpt": "<two sentences capturing today's dominant theme>",
-  "body": "<full article, 600-800 words, plain text only, no citation tags>"
-}}"""
+  "excerpt": "שתי משפטים הלוכדות את הנושא המרכזי של היום",
+  "body": "הכתבה המלאה כאן"
+}}
+Do NOT add markdown fences, preamble, or explanation. Start with {{ end with }}."""
 
-WEEKLY_PROMPT = f"""You are a senior Hebrew financial analyst writing the weekly column for noamvardi.ai.
+WEEKLY_PROMPT = f"""You are a senior Hebrew financial analyst.
 Today is {hebrew_day_label()}.
 
-TASK: Write a comprehensive weekly market review in HEBREW (900-1200 words).
+Search the web for this week's market performance and write a comprehensive weekly review in HEBREW (900-1200 words).
 
-RESEARCH STEPS — search, then read the actual full articles:
-1. Search "weekly market recap {datetime.now().strftime('%B %Y')} S&P Nasdaq performance" — read articles, get exact weekly % changes.
-2. Search "bitcoin weekly {datetime.now().strftime('%B %Y')} Israel stocks TA-35 shekel" — crypto and Israeli market week in review.
-3. Search "AI tech news week {datetime.now().strftime('%B %Y')} announcements funding" — biggest AI stories.
+FIND AND REPORT:
+- S&P 500, Nasdaq, Dow — weekly % changes and exact closing levels
+- Tel Aviv TA-35 weekly performance and shekel/dollar move
+- Bitcoin and Ethereum weekly performance and the narrative behind the move
+- The 2-3 biggest AI/tech stories of the week and their market impact
+- Key geopolitical events that affected markets
 
 WRITING RULES:
-- REAL numbers only — exact index levels, weekly % changes, market caps.
-- Name-drop companies, CEOs, analysts when relevant.
-- Minimum 900 words. Analyze WHY things moved, not just WHAT moved.
+- Real numbers only — exact levels and weekly % changes
+- Deep analysis of WHY things moved, not just what moved
+- Name CEOs, analysts, companies when relevant
 - Hebrew only. Professional newspaper style.
-- CRITICAL: Do NOT include any <cite> tags, [1], [[1]], footnotes, citation markers, or any HTML/XML markup anywhere — clean plain text only.
 
-SECTIONS:
+SECTIONS (use ## for headers):
 ## תמונת המצב — השוק האמריקאי
-S&P500, Nasdaq, Dow — ביצועים שבועיים עם מספרים. הסבר למה.
-
 ## שוק ההון הישראלי
-ת"א 35, שקל/דולר, אירועים מקומיים שהשפיעו.
-
 ## קריפטו
-BTC ו-ETH — ביצועים שבועיים, נרטיב השוק, נפח מסחר.
-
 ## בינה מלאכותית
-החדשות הגדולות של השבוע — עסקאות, מודלים, חברות. למה זה חשוב לשוק.
-
 ## גיאופוליטיקה
-השפעת אירועים גלובליים על שווקים. השמט אם שקט.
-
 ## מבט לשבוע הבא
-דוחות, פד, נתוני מאקרו — מה להכין.
 
-Output ONLY a valid JSON object — no preamble, no explanation, no markdown fences. Your ENTIRE response must be only the JSON below, starting with {{ and ending with }}:
+OUTPUT FORMAT — your ENTIRE response must be exactly this JSON and nothing else:
 {{
-  "title": "<compelling Hebrew headline — the week's defining theme>",
-  "excerpt": "<2-3 sentences capturing the week>",
-  "body": "<full article, 900-1200 words, plain text only, no citation tags>"
-}}"""
+  "title": "כותרת עברית שמגדירה את השבוע",
+  "excerpt": "2-3 משפטים המסכמים את השבוע",
+  "body": "הכתבה המלאה כאן"
+}}
+Do NOT add markdown fences, preamble, or explanation. Start with {{ end with }}."""
+
+
+# ── Parsing ──────────────────────────────────────────────────────────────────
+def clean_and_parse_json(text):
+    def fix_escapes(s):
+        s = re.sub(r"\\'", "'", s)                    # \' → ' (invalid in JSON)
+        s = re.sub(r'\\([^"\\/bfnrtu])', r'\1', s)    # other invalid \X → X
+        return s
+
+    def strip_citations(s):
+        s = re.sub(r'<[a-z][^>]*>.*?</[a-z]+>', '', s, flags=re.DOTALL | re.IGNORECASE)
+        s = re.sub(r'\[\d+\]', '', s)
+        return s.strip()
+
+    candidates = [text]
+
+    fence = re.search(r"```(?:json)?\s*(\{[\s\S]*\})\s*```", text)
+    if fence:
+        candidates.append(fence.group(1))
+
+    brace = re.search(r"(\{[\s\S]*\})", text)
+    if brace:
+        candidates.append(brace.group(1))
+
+    for candidate in candidates:
+        for attempt in [candidate, fix_escapes(candidate)]:
+            try:
+                obj = json.loads(attempt.strip())
+                obj["body"] = strip_citations(obj.get("body", ""))
+                obj["excerpt"] = strip_citations(obj.get("excerpt", ""))
+                return obj
+            except json.JSONDecodeError:
+                continue
+    return None
+
 
 # ── Main ─────────────────────────────────────────────────────────────────────
 def main():
-    client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+    client = genai.Client(api_key=GEMINI_API_KEY)
     prompt = DAILY_PROMPT if ARTICLE_TYPE == "daily" else WEEKLY_PROMPT
 
     print(f"[{ARTICLE_TYPE.upper()}] Researching and writing article...")
 
-    max_searches = 3
-
-    response = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=16000,
-        tools=[{"type": "web_search_20250305", "name": "web_search", "max_uses": max_searches}],
-        messages=[{
-            "role": "user",
-            "content": [{
-                "type": "text",
-                "text": prompt,
-                "cache_control": {"type": "ephemeral"},
-            }],
-        }],
+    response = client.models.generate_content(
+        model="gemini-1.5-flash",
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            tools=[types.Tool(google_search=types.GoogleSearch())],
+            max_output_tokens=8192,
+            temperature=0.3,
+        ),
     )
 
-    # Extract the final text block
-    article_json = None
-    full_text = ""
-    for block in reversed(response.content):
-        if block.type == "text" and block.text.strip():
-            full_text = block.text.strip()
-            break
+    full_text = (response.text or "").strip()
 
-    if full_text:
-        # Try multiple extraction strategies
-        import re
-        candidates = []
+    if not full_text:
+        print("ERROR: Empty response from Gemini.")
+        sys.exit(1)
 
-        # 1. Direct parse
-        candidates.append(full_text)
-
-        # 2. Strip ```json ... ``` fences
-        fence = re.search(r"```(?:json)?\s*(\{[\s\S]*\})\s*```", full_text)
-        if fence:
-            candidates.append(fence.group(1))
-
-        # 3. Find first { ... } JSON blob
-        brace = re.search(r"(\{[\s\S]*\})", full_text)
-        if brace:
-            candidates.append(brace.group(1))
-
-        for candidate in candidates:
-            try:
-                article_json = json.loads(candidate.strip())
-                break
-            except json.JSONDecodeError:
-                continue
+    article_json = clean_and_parse_json(full_text)
 
     if not article_json:
         print("ERROR: Could not parse JSON from model response.")
         print("Raw response (first 4000 chars):", full_text[:4000])
         sys.exit(1)
-
-    # Strip any citation tags the model may have included despite instructions
-    import re as _re
-    def strip_citations(text):
-        text = _re.sub(r'<cite[^>]*>.*?</cite>', '', text, flags=_re.DOTALL | _re.IGNORECASE)
-        text = _re.sub(r'<cite[^>]*/>', '', text, flags=_re.IGNORECASE)
-        text = _re.sub(r'\[\d+\]', '', text)
-        return text.strip()
-
-    article_json["body"] = strip_citations(article_json.get("body", ""))
-    article_json["excerpt"] = strip_citations(article_json.get("excerpt", ""))
 
     payload = {
         "title": article_json["title"],
