@@ -31,7 +31,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install openai requests
+        run: pip install google-genai requests
 
       - name: Determine article type
         id: type
