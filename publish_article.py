@@ -17,6 +17,7 @@ import json
 import os
 import sys
 import re
+import time
 from datetime import datetime, timezone, timedelta
 
 # ── Config ──────────────────────────────────────────────────────────────────
@@ -161,17 +162,29 @@ def main():
 
     print(f"[{ARTICLE_TYPE.upper()}] Researching and writing article...")
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            tools=[types.Tool(google_search=types.GoogleSearch())],
-            max_output_tokens=8192,
-            temperature=0.3,
-        ),
-    )
-
-    full_text = (response.text or "").strip()
+    full_text = ""
+    for attempt in range(1, 5):
+        try:
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    tools=[types.Tool(google_search=types.GoogleSearch())],
+                    max_output_tokens=8192,
+                    temperature=0.3,
+                ),
+            )
+            full_text = (response.text or "").strip()
+            break
+        except Exception as e:
+            print(f"Attempt {attempt} failed: {e}")
+            if attempt < 4:
+                wait = 30 * attempt
+                print(f"Retrying in {wait}s...")
+                time.sleep(wait)
+            else:
+                print("ERROR: All attempts failed.")
+                sys.exit(1)
 
     if not full_text:
         print("ERROR: Empty response from Gemini.")
