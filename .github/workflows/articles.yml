@@ -2,8 +2,6 @@ name: Publish Hebrew Market Articles
 
 on:
   schedule:
-    # Daily brief — every day at 07:00 Israel time (04:00 UTC)
-    - cron: "0 4 * * *"
     # Weekly summary — every Sunday at 20:00 Israel time (17:00 UTC)
     - cron: "0 17 * * 0"
   workflow_dispatch:
