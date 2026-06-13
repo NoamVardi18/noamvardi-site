@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { AdminNav } from "@/components/admin/AdminNav";
 import { categoryLabel } from "@/components/ArticleCard";
 import { getSessionUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -15,27 +16,43 @@ export default async function AdminPage() {
   if (!user.isAdmin) redirect("/");
 
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("articles")
-    .select("id, title, slug, category, status, published_at")
-    .order("created_at", { ascending: false });
+  const [{ data }, { count: usersCount }, { count: newLeads }] = await Promise.all([
+    supabase
+      .from("articles")
+      .select("id, title, slug, category, status, published_at")
+      .order("created_at", { ascending: false }),
+    supabase.from("profiles").select("id", { count: "exact", head: true }),
+    supabase
+      .from("contact_messages")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "new"),
+  ]);
   const articles = data ?? [];
+  const published = articles.filter((a) => a.status === "published").length;
 
   return (
     <>
       <SiteHeader user={user} />
       <main className="page">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
-          <div>
-            <h1>ניהול מאמרים</h1>
-            <p className="sub" style={{ margin: 0 }}>צור, ערוך ופרסם מאמרים</p>
-          </div>
-          <Link href="/admin/new" className="btn-blk" style={{ textDecoration: "none" }}>
-            + מאמר חדש
-          </Link>
+        <span className="kicker">CONTROL ROOM</span>
+        <h1>ניהול</h1>
+        <p className="sub">מאמרים, פרומו, לידים ומשתמשים — הכל ממקום אחד.</p>
+
+        <AdminNav active="/admin" />
+
+        <div className="admin-tiles">
+          <div className="admin-tile"><div className="v">{articles.length}</div><div className="t">מאמרים</div></div>
+          <div className="admin-tile"><div className="v">{published}</div><div className="t">מפורסמים</div></div>
+          <div className="admin-tile"><div className="v">{usersCount ?? 0}</div><div className="t">משתמשים רשומים</div></div>
+          <div className="admin-tile"><div className="v">{newLeads ?? 0}</div><div className="t">לידים חדשים</div></div>
         </div>
 
-        <div className="card" style={{ marginTop: 28, padding: 0, overflowX: "auto" }}>
+        <div className="admin-head">
+          <h3 style={{ margin: 0, fontSize: 18 }}>כל המאמרים</h3>
+          <Link href="/admin/new" className="btn-blk">+ מאמר חדש</Link>
+        </div>
+
+        <div className="card" style={{ padding: 0, overflowX: "auto" }}>
           <table className="tbl">
             <thead>
               <tr>
@@ -52,9 +69,11 @@ export default async function AdminPage() {
                 articles.map((a) => (
                   <tr key={a.id}>
                     <td style={{ fontWeight: 600 }}>{a.title}</td>
-                    <td>{categoryLabel(a.category)}</td>
+                    <td><span className="pill">{categoryLabel(a.category)}</span></td>
                     <td>
-                      <span className="pill">{a.status === "published" ? "מפורסם" : "טיוטה"}</span>
+                      <span className={`pill ${a.status === "published" ? "green" : ""}`}>
+                        {a.status === "published" ? "מפורסם" : "טיוטה"}
+                      </span>
                     </td>
                     <td>
                       <div className="row-actions">
@@ -73,24 +92,12 @@ export default async function AdminPage() {
           </table>
         </div>
 
-        <div className="card" style={{ marginTop: 28 }}>
-          <h3 style={{ marginTop: 0 }}>אוטומציה שבועית (Claude Cowork)</h3>
-          <p className="muted" style={{ fontSize: 14, lineHeight: 1.8 }}>
-            מאמרים נוצרים אוטומטית דרך נקודת הקצה <code>POST /api/automation/articles</code> עם הכותרת
-            <code> x-automation-secret</code>. ניתן לחבר את Claude Cowork כדי להוסיף מאמר חדש בכל שבוע ללא התערבות.
+        <div className="card" style={{ marginTop: 24 }}>
+          <h3 style={{ marginTop: 0 }}>אוטומציה שבועית</h3>
+          <p className="muted" style={{ fontSize: 14, lineHeight: 1.8, margin: 0 }}>
+            מאמר על טרנדים בסוכני AI ואוטומציה מתפרסם אוטומטית פעם בשבוע דרך{" "}
+            <code>POST /api/automation/articles</code> (GitHub Action + Gemini).
           </p>
-        </div>
-
-        <div className="card" style={{ marginTop: 20 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div>
-              <h3 style={{ marginTop: 0 }}>ניהול משתמשים</h3>
-              <p className="muted" style={{ fontSize: 14, margin: 0 }}>הענקת / שלילת הרשאות אדמין</p>
-            </div>
-            <Link href="/admin/users" className="btn-blk" style={{ textDecoration: "none", padding: "10px 20px" }}>
-              ניהול משתמשים →
-            </Link>
-          </div>
         </div>
       </main>
       <SiteFooter />

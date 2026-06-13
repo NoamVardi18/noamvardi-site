@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { AdminNav } from "@/components/admin/AdminNav";
 import { getSessionUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { toggleAdminAction } from "./actions";
@@ -27,17 +27,12 @@ export default async function AdminUsersPage() {
     <>
       <SiteHeader user={user} />
       <main className="page">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
-          <div>
-            <h1>ניהול משתמשים</h1>
-            <p className="sub" style={{ margin: 0 }}>{profiles.length} משתמשים רשומים</p>
-          </div>
-          <Link href="/admin" className="icon-btn" style={{ textDecoration: "none" }}>
-            → חזרה לניהול
-          </Link>
-        </div>
+        <span className="kicker">USERS</span>
+        <h1>ניהול משתמשים</h1>
+        <p className="sub">{profiles.length} משתמשים רשומים</p>
+        <AdminNav active="/admin/users" />
 
-        <div className="card" style={{ marginTop: 28, padding: 0, overflowX: "auto" }}>
+        <div className="card" style={{ padding: 0, overflowX: "auto" }}>
           <table className="tbl">
             <thead>
               <tr>
@@ -63,11 +58,7 @@ export default async function AdminUsersPage() {
                     <td className="muted" style={{ direction: "ltr", textAlign: "right" }}>{p.email}</td>
                     <td className="muted">{joinDate}</td>
                     <td>
-                      <span className={`pill`} style={{
-                        background: p.is_admin ? "#0a0a0a" : "#f5f5f5",
-                        color: p.is_admin ? "#fff" : "#555",
-                        border: "none",
-                      }}>
+                      <span className={`pill ${p.is_admin ? "gold" : ""}`}>
                         {p.is_admin ? "אדמין" : "משתמש"}
                       </span>
                     </td>
