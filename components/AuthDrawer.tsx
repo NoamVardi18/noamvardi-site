@@ -4,7 +4,6 @@ import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signInAction, signUpAction } from "@/app/auth/actions";
-import { LogoMark } from "./Logo";
 
 type Mode = "login" | "register";
 
@@ -55,9 +54,8 @@ export function AuthDrawer({
         <button className="drawer-close" onClick={onClose} aria-label="סגור">
           ✕
         </button>
-        <div style={{ marginBottom: 20 }}>
-          <LogoMark size={44} />
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo/logo-dark-bg.jpg" alt="" aria-hidden="true" className="drawer-logo" style={{ alignSelf: "flex-start" }} />
 
         {mode === "login" ? (
           <>

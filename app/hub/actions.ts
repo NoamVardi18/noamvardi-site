@@ -22,8 +22,12 @@ export async function addAccount(formData: FormData) {
 }
 
 export async function deleteAccount(formData: FormData) {
-  const { supabase } = await uid();
-  await supabase.from("accounts").delete().eq("id", String(formData.get("id")));
+  const { supabase, userId } = await uid();
+  await supabase
+    .from("accounts")
+    .delete()
+    .eq("id", String(formData.get("id")))
+    .eq("user_id", userId);
   revalidatePath("/hub");
 }
 
@@ -74,8 +78,12 @@ export async function addHolding(formData: FormData) {
 }
 
 export async function deleteHolding(formData: FormData) {
-  const { supabase } = await uid();
-  await supabase.from("holdings").delete().eq("id", String(formData.get("id")));
+  const { supabase, userId } = await uid();
+  await supabase
+    .from("holdings")
+    .delete()
+    .eq("id", String(formData.get("id")))
+    .eq("user_id", userId);
   revalidatePath("/hub");
 }
 

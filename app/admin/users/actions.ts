@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
@@ -17,6 +17,13 @@ export async function toggleAdminAction(formData: FormData) {
   if (authData.user?.id === targetId && !newValue)
     throw new Error("אי אפשר להסיר הרשאות אדמין מעצמך");
 
-  await supabase.from("profiles").update({ is_admin: newValue }).eq("id", targetId);
+  // is_admin is no longer client-writable (column grant revoked) — the change
+  // must go through the service role after the admin check above.
+  const admin = createServiceClient();
+  const { error } = await admin
+    .from("profiles")
+    .update({ is_admin: newValue })
+    .eq("id", targetId);
+  if (error) throw new Error(error.message);
   revalidatePath("/admin/users");
 }
