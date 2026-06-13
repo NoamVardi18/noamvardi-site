@@ -13,27 +13,22 @@ export type SessionUser = {
   isAdmin: boolean;
 } | null;
 
-const SECTIONS = [
-  { id: "about", title: "אודות", sub: "מי אני ומה אני עושה" },
-  { id: "work", title: "עבודות", sub: "אתרים שבניתי" },
-  { id: "services", title: "שירותים", sub: "מה אני מציע" },
-  { id: "offer", title: "מבצע אתר בלעדי", sub: "3 שנים ב-1,500 ₪" },
-  { id: "contact", title: "צור קשר", sub: "השאר פרטים" },
+const LINKS = [
+  { href: "/#agents", label: "הסוכנים" },
+  { href: "/#process", label: "איך זה עובד" },
+  { href: "/articles", label: "מאמרים" },
 ];
 
 export function SiteHeader({ user }: { user: SessionUser }) {
   const router = useRouter();
-  const [dropOpen, setDropOpen] = useState(false);
   const [userMenu, setUserMenu] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
-  const dropRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function onClick(e: MouseEvent) {
-      if (dropRef.current && !dropRef.current.contains(e.target as Node)) setDropOpen(false);
       if (userRef.current && !userRef.current.contains(e.target as Node)) setUserMenu(false);
     }
     document.addEventListener("mousedown", onClick);
@@ -53,99 +48,81 @@ export function SiteHeader({ user }: { user: SessionUser }) {
 
   return (
     <>
-      <nav className="nav" aria-label="ניווט ראשי">
-        <Logo />
+      <div className="nav-wrap">
+        <nav className="nav" aria-label="ניווט ראשי">
+          <Logo />
 
-        <div className="nav-actions desktop">
-          {/* Sections dropdown */}
-          <div className={`dropdown ${dropOpen ? "open" : ""}`} ref={dropRef}>
-            <button
-              className="nav-link dropdown-trigger"
-              onClick={() => setDropOpen((o) => !o)}
-              aria-expanded={dropOpen}
-              aria-haspopup="true"
-            >
-              סקשנים <span className="chev" aria-hidden="true">▾</span>
-            </button>
-            <div className="dropdown-panel" role="menu">
-              {SECTIONS.map((s) => (
-                <Link
-                  key={s.id}
-                  href={`/#${s.id}`}
-                  className="dropdown-item"
-                  role="menuitem"
-                  onClick={() => setDropOpen(false)}
+          <div className="nav-links desktop">
+            {LINKS.map((l) => (
+              <Link key={l.href} href={l.href} className="nav-link">
+                {l.label}
+              </Link>
+            ))}
+            <button className="nav-link" onClick={goHub}>מרכז הנכסים</button>
+
+            {user ? (
+              <div className={`dropdown ${userMenu ? "open" : ""}`} ref={userRef}>
+                <button
+                  className="nav-cta ghost dropdown-trigger"
+                  onClick={() => setUserMenu((o) => !o)}
+                  aria-expanded={userMenu}
                 >
-                  <span className="di-title">{s.title}</span>
-                  <span className="di-sub">{s.sub}</span>
-                </Link>
-              ))}
-            </div>
+                  {user.name?.split(" ")[0] || "החשבון שלי"}{" "}
+                  <span className="chev" aria-hidden="true">▾</span>
+                </button>
+                <div className="dropdown-panel" role="menu">
+                  <Link href="/hub" className="dropdown-item" onClick={() => setUserMenu(false)}>
+                    <span className="di-title">מרכז הנכסים</span>
+                    <span className="di-sub">ההשקעות שלי</span>
+                  </Link>
+                  {user.isAdmin && (
+                    <Link href="/admin" className="dropdown-item" onClick={() => setUserMenu(false)}>
+                      <span className="di-title">ניהול</span>
+                      <span className="di-sub">מאמרים, משתמשים ופרומו</span>
+                    </Link>
+                  )}
+                  <button
+                    className="dropdown-item"
+                    onClick={async () => {
+                      await signOutAction();
+                      setUserMenu(false);
+                      router.refresh();
+                    }}
+                  >
+                    <span className="di-title">התנתקות</span>
+                    <span className="di-sub">{user.email}</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button className="nav-cta ghost" onClick={() => openAuth("login")}>
+                התחברות
+              </button>
+            )}
+            <Link href="/#contact" className="nav-cta">דברו איתי</Link>
           </div>
 
-          <Link href="/articles" className="nav-link">מאמרים</Link>
-          <button className="nav-link" onClick={goHub}>מרכז הנכסים</button>
-
-          {user ? (
-            <div className={`dropdown ${userMenu ? "open" : ""}`} ref={userRef}>
-              <button
-                className="nav-cta dropdown-trigger"
-                onClick={() => setUserMenu((o) => !o)}
-                aria-expanded={userMenu}
-              >
-                {user.name?.split(" ")[0] || "החשבון שלי"}{" "}
-                <span className="chev" aria-hidden="true">▾</span>
-              </button>
-              <div className="dropdown-panel" role="menu">
-                <Link href="/hub" className="dropdown-item" onClick={() => setUserMenu(false)}>
-                  <span className="di-title">מרכז הנכסים</span>
-                  <span className="di-sub">ההשקעות שלי</span>
-                </Link>
-                {user.isAdmin && (
-                  <Link href="/admin" className="dropdown-item" onClick={() => setUserMenu(false)}>
-                    <span className="di-title">ניהול</span>
-                    <span className="di-sub">מאמרים ואדמין</span>
-                  </Link>
-                )}
-                <button
-                  className="dropdown-item"
-                  onClick={async () => {
-                    await signOutAction();
-                    setUserMenu(false);
-                    router.refresh();
-                  }}
-                >
-                  <span className="di-title">התנתקות</span>
-                  <span className="di-sub">{user.email}</span>
-                </button>
-              </div>
-            </div>
-          ) : (
-            <>
-              <button className="nav-cta ghost" onClick={() => openAuth("login")}>התחברות</button>
-              <button className="nav-cta" onClick={() => openAuth("register")}>הרשמה</button>
-            </>
-          )}
-        </div>
-
-        <button
-          className="hamburger"
-          aria-label="פתח תפריט"
-          aria-expanded={mobileOpen}
-          onClick={() => setMobileOpen(true)}
-        >
-          <span /><span /><span />
-        </button>
-      </nav>
+          <button
+            className="hamburger"
+            aria-label="פתח תפריט"
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen(true)}
+          >
+            <span /><span /><span />
+          </button>
+        </nav>
+      </div>
 
       {/* Mobile menu */}
       <div className={`mobile-nav ${mobileOpen ? "open" : ""}`} role="dialog" aria-label="תפריט">
         <button className="close-x" aria-label="סגור" onClick={() => setMobileOpen(false)}>✕</button>
-        <Link href="/#about" onClick={() => setMobileOpen(false)}>אודות</Link>
-        <Link href="/#work" onClick={() => setMobileOpen(false)}>עבודות</Link>
-        <Link href="/#services" onClick={() => setMobileOpen(false)}>שירותים</Link>
-        <Link href="/articles" onClick={() => setMobileOpen(false)}>מאמרים</Link>
+        {LINKS.map((l) => (
+          <Link key={l.href} href={l.href} onClick={() => setMobileOpen(false)}>
+            {l.label}
+          </Link>
+        ))}
         <button onClick={() => { setMobileOpen(false); goHub(); }}>מרכז הנכסים</button>
+        <Link href="/#contact" onClick={() => setMobileOpen(false)}>צור קשר</Link>
         {user ? (
           <>
             {user.isAdmin && <Link href="/admin" onClick={() => setMobileOpen(false)}>ניהול</Link>}
