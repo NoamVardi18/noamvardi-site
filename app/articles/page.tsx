@@ -22,8 +22,9 @@ export default async function ArticlesPage() {
     <>
       <SiteHeader user={user} />
       <main className="page">
+        <span className="kicker">INSIGHTS</span>
         <h1>מאמרים</h1>
-        <p className="sub">תובנות על בינה מלאכותית, פיתוח אתרים ושוק ההון</p>
+        <p className="sub">תובנות על סוכני AI, אוטומציה עסקית ועתיד העבודה — ולצידם ארכיון מאמרי שוק ההון</p>
 
         {articles.length === 0 ? (
           <div className="empty-state">

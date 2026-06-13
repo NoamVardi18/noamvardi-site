@@ -1,13 +1,14 @@
 """
 publish_article.py
 ------------------
-Researches current news and publishes a Hebrew market article to noamvardi.ai.
+Researches current news and publishes a Hebrew AI-automation/agents article
+to noamvardi.ai.
 Requires: pip install google-genai requests
 
 Environment variables:
   GEMINI_API_KEY         — Google Gemini API key
   AUTOMATION_SECRET      — x-automation-secret for the site API
-  ARTICLE_TYPE           — "daily" or "weekly" (default: "daily")
+  ARTICLE_TYPE           — "daily" (short news brief) or "weekly" (trend column)
 """
 
 from google import genai
@@ -27,14 +28,14 @@ ARTICLE_TYPE = os.environ.get("ARTICLE_TYPE", "daily")
 API_URL = "https://noamvardi-site.vercel.app/api/automation/articles"
 
 COVER_IMAGES = [
-    "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&q=80",
-    "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=1200&q=80",
-    "https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=1200&q=80",
-    "https://images.unsplash.com/photo-1611996575749-79a3a250f948?w=1200&q=80",
-    "https://images.unsplash.com/photo-1605792657660-596af9009e82?w=1200&q=80",
-    "https://images.unsplash.com/photo-1543286386-713bdd548da4?w=1200&q=80",
-    "https://images.unsplash.com/photo-1569025690938-a00729c9e1f9?w=1200&q=80",
-    "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=1200&q=80",
+    "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=80",  # ai chip
+    "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1200&q=80",  # robot hand
+    "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&q=80",  # robot face
+    "https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=1200&q=80",  # humanoid
+    "https://images.unsplash.com/photo-1555255707-c07966088b7b?w=1200&q=80",     # code blue
+    "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=80",  # circuit board
+    "https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200&q=80",     # team laptops
+    "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&q=80",  # office work
 ]
 
 
@@ -54,67 +55,65 @@ def hebrew_day_label():
 
 
 # ── Prompts ──────────────────────────────────────────────────────────────────
-DAILY_PROMPT = f"""You are a senior Hebrew financial journalist.
+DAILY_PROMPT = f"""You are a senior Hebrew tech journalist covering AI agents and business automation.
 Today is {hebrew_day_label()}.
 
-Search the web for today's market news and write a thorough daily market brief in HEBREW (600-800 words).
+Search the web for today's AI news and write a sharp daily brief in HEBREW (600-800 words) for Israeli business owners.
 
 FIND AND REPORT:
-- S&P 500, Nasdaq, Dow Jones — exact levels and % changes
-- Bitcoin and Ethereum — exact prices and 24h % changes
-- Tel Aviv TA-35 index and shekel/dollar rate
-- The biggest market-moving story today with deep context on WHY it happened
+- The most important AI/agents announcement of the day (new model, agent product, automation tool)
+- What it actually enables a business to automate — concrete use cases
+- One real company example of AI automation in action, if available
+- What an Israeli SMB owner should do about it this week
 
 WRITING RULES:
-- Real numbers from your searches only
-- Explain WHY things moved — causes, not just effects
+- Real facts from your searches only — name companies, products, dates
+- Explain the practical "so what" for a business, not just the announcement
 - Paragraph style, no bullet points, no emojis
 - Hebrew only throughout
 
 SECTIONS (use ## for headers):
-## פתיחת השווקים
-## קריפטו
-## הסיפור הגדול של היום
-## נקודות נוספות לעקוב
-## לוח האירועים
+## מה קרה היום
+## מה זה אומר לעסק שלך
+## דוגמה מהשטח
+## צעד אחד לעשות השבוע
 
 OUTPUT FORMAT — your ENTIRE response must be exactly this JSON and nothing else:
 {{
-  "title": "עדכון שווקים — {hebrew_day_label()}",
-  "excerpt": "שתי משפטים הלוכדות את הנושא המרכזי של היום",
+  "title": "עדכון AI לעסקים — {hebrew_day_label()}",
+  "excerpt": "שני משפטים הלוכדים את החדשות החשובות של היום",
   "body": "הכתבה המלאה כאן"
 }}
 Do NOT add markdown fences, preamble, or explanation. Start with {{ end with }}."""
 
-WEEKLY_PROMPT = f"""You are a senior Hebrew financial analyst.
+WEEKLY_PROMPT = f"""You are a senior Hebrew analyst covering AI agents, automation, and the future of work.
 Today is {hebrew_day_label()}.
 
-Search the web for this week's market performance and write a comprehensive weekly review in HEBREW (900-1200 words).
+Search the web for this week's developments in AI agents and business automation, and write a comprehensive weekly column in HEBREW (900-1200 words) aimed at Israeli business owners and managers.
 
 FIND AND REPORT:
-- S&P 500, Nasdaq, Dow — weekly % changes and exact closing levels
-- Tel Aviv TA-35 weekly performance and shekel/dollar move
-- Bitcoin and Ethereum weekly performance and the narrative behind the move
-- The 2-3 biggest AI/tech stories of the week and their market impact
-- Key geopolitical events that affected markets
+- The 2-3 biggest AI-agent / automation stories of the week (new agent products, model releases, enterprise adoption news) — with company names, product names and dates
+- Concrete numbers where available: adoption stats, funding, time/cost savings reported
+- At least one real-world case of a business automating support, scheduling, sales follow-up or back-office work
+- A practical takeaway: what kind of task is now automatable that wasn't a year ago
+- A short look ahead: what to watch next week
 
 WRITING RULES:
-- Real numbers only — exact levels and weekly % changes
-- Deep analysis of WHY things moved, not just what moved
-- Name CEOs, analysts, companies when relevant
-- Hebrew only. Professional newspaper style.
+- Real facts from your searches only — never invent numbers or products
+- Translate every story into business impact: hours saved, leads answered, processes replaced
+- Name companies, CEOs and products when relevant
+- Hebrew only. Professional, energetic magazine style — make the reader feel what is possible.
 
 SECTIONS (use ## for headers):
-## תמונת המצב — השוק האמריקאי
-## שוק ההון הישראלי
-## קריפטו
-## בינה מלאכותית
-## גיאופוליטיקה
-## מבט לשבוע הבא
+## הסיפור הגדול של השבוע
+## סוכנים בשטח — מי כבר עובד עם זה
+## הכלים החדשים
+## מה זה אומר לעסק שלך
+## מבט קדימה
 
 OUTPUT FORMAT — your ENTIRE response must be exactly this JSON and nothing else:
 {{
-  "title": "כותרת עברית שמגדירה את השבוע",
+  "title": "כותרת עברית מסקרנת שמגדירה את השבוע בעולם הסוכנים",
   "excerpt": "2-3 משפטים המסכמים את השבוע",
   "body": "הכתבה המלאה כאן"
 }}
@@ -199,7 +198,7 @@ def main():
 
     payload = {
         "title": article_json["title"],
-        "category": "finance",
+        "category": "ai_tech",
         "excerpt": article_json["excerpt"],
         "body": article_json["body"],
         "cover_image": get_cover_image(),

@@ -25,8 +25,8 @@ export function ArticleCard({ a }: { a: Article }) {
         ) : (
           <div className="acard-ph">
             <svg viewBox="0 0 58 36" width="48" height="30" fill="none">
-              <path d="M4 34 L4 3 L22 34 L22 3" stroke="#cfcfcf" strokeWidth="3.4" />
-              <path d="M32 3 L43 34 L54 3" stroke="#cfcfcf" strokeWidth="3.4" />
+              <path d="M4 34 L4 3 L22 34 L22 3" stroke="rgba(242,239,233,0.25)" strokeWidth="3.4" />
+              <path d="M32 3 L43 34 L54 3" stroke="rgba(200,169,106,0.45)" strokeWidth="3.4" />
             </svg>
           </div>
         )}

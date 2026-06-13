@@ -1,8 +1,8 @@
-name: Publish Hebrew Market Articles
+name: Publish Hebrew AI Automation Articles
 
 on:
   schedule:
-    # Weekly summary — every Sunday at 20:00 Israel time (17:00 UTC)
+    # Weekly AI-agents trend column — every Sunday at 20:00 Israel time (17:00 UTC)
     - cron: "0 17 * * 0"
   workflow_dispatch:
     inputs:
