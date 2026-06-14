@@ -2,6 +2,8 @@
 
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 type Result = { error?: string; ok?: boolean };
 
@@ -90,4 +92,16 @@ export async function signOutAction() {
   const supabase = await createClient();
   await supabase.auth.signOut();
   revalidatePath("/", "layout");
+}
+
+export async function signInWithGoogleAction() {
+  const supabase = await createClient();
+  const h = await headers();
+  const origin = h.get("origin") ?? `https://${h.get("host")}`;
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: `${origin}/auth/callback` },
+  });
+  if (error || !data?.url) redirect("/?auth_error=1");
+  redirect(data.url);
 }
