@@ -5,6 +5,7 @@ const TABS = [
   { href: "/admin/promo", label: "פרומו" },
   { href: "/admin/leads", label: "לידים" },
   { href: "/admin/users", label: "משתמשים" },
+  { href: "/admin/portfolio", label: "תיק השקעות" },
 ];
 
 export function AdminNav({ active }: { active: string }) {
