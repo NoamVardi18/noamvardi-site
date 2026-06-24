@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 
 async function requireAdmin() {
   const user = await getSessionUser();
-  if (!user?.isAdmin) throw new Error("גישה נדחתה");
+  if (!user?.isAdmin) throw new Error("Access denied");
 }
 
 export async function setLeadStatusAction(formData: FormData) {

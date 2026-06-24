@@ -5,7 +5,7 @@ import { AdminNav } from "@/components/admin/AdminNav";
 import { getSessionUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata = { title: "תיק השקעות | ניהול" };
+export const metadata = { title: "Portfolio | Admin" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminPortfolioPage() {
@@ -20,7 +20,7 @@ export default async function AdminPortfolioPage() {
     .single();
 
   const updated = data?.updated_at
-    ? new Date(data.updated_at).toLocaleString("he-IL", { timeZone: "Asia/Jerusalem" })
+    ? new Date(data.updated_at).toLocaleString("en-US", { timeZone: "Asia/Jerusalem" })
     : null;
 
   return (
@@ -28,8 +28,8 @@ export default async function AdminPortfolioPage() {
       <SiteHeader user={user} />
       <main className="page">
         <span className="kicker">PORTFOLIO</span>
-        <h1>תיק השקעות</h1>
-        <p className="sub">{updated ? `עודכן: ${updated}` : "אין נתונים עדיין"}</p>
+        <h1>Portfolio</h1>
+        <p className="sub">{updated ? `Updated: ${updated}` : "No data yet"}</p>
         <AdminNav active="/admin/portfolio" />
 
         {data?.html ? (
@@ -45,7 +45,7 @@ export default async function AdminPortfolioPage() {
             }}
           />
         ) : (
-          <p>הלוח עוד לא נוצר. הרץ את ה-Financial Advisor (mode 7) כדי לדחוף נתונים.</p>
+          <p>The dashboard hasn&apos;t been generated yet. Run the Financial Advisor (mode 7) to push data.</p>
         )}
       </main>
       <SiteFooter />

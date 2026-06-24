@@ -40,7 +40,7 @@ const ASSET_LABEL: Record<string, string> = Object.fromEntries(
 const defaultCurrency = (assetType: string) =>
   assetType === "stock_il" ? "ILS" : "USD";
 
-const ACCENT = "#c8a96a";
+const ACCENT = "#C8862B";
 
 function ChartTooltip({ active, payload, label, sym, showPct, baseVal }: {
   active?: boolean;
@@ -62,7 +62,7 @@ function ChartTooltip({ active, payload, label, sym, showPct, baseVal }: {
       <div style={{ fontWeight: 700, fontSize: 16, direction: "ltr" }}>
         {showPct
           ? `${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`
-          : `${sym}${val.toLocaleString("he-IL", { maximumFractionDigits: 0 })}`
+          : `${sym}${val.toLocaleString("en-US", { maximumFractionDigits: 0 })}`
         }
       </div>
     </div>
@@ -95,7 +95,7 @@ export function HubClient({
   const ilsRate = fxFromUsd["ILS"] ?? 3.7;
 
   const fmt = (usd: number) =>
-    `${sym}${(usd * rate).toLocaleString("he-IL", { maximumFractionDigits: 0 })}`;
+    `${sym}${(usd * rate).toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
 
   function pickCurrency(code: string) {
     setCur(code);
@@ -138,25 +138,25 @@ export function HubClient({
   return (
     <main className="page">
       <span className="kicker">PRIVATE ASSET HUB</span>
-      <h1>מרכז הנכסים{userName ? `, ${userName.split(" ")[0]}` : ""}</h1>
-      <p className="sub">כל ההשקעות שלך במקום אחד — מניות, קרנות, מטבעות ועוד.</p>
+      <h1>Asset hub{userName ? `, ${userName.split(" ")[0]}` : ""}</h1>
+      <p className="sub">All your investments in one place — stocks, funds, crypto and more.</p>
 
       {/* ── Top row: Total + Graph ── */}
       <div className="hub-top">
         <div className="hub-total">
-          <span className="lbl">שווי כולל</span>
+          <span className="lbl">Total value</span>
           <span className="val">{fmt(totalUsd)}</span>
           {change !== null && (
             <span className={`chg ${change >= 0 ? "up" : "down"}`}>
               {change >= 0 ? "▲" : "▼"}{" "}
               {showPct
                 ? `${Math.abs(changePct ?? 0).toFixed(2)}%`
-                : `${sym}${Math.abs(change * rate).toLocaleString("he-IL", { maximumFractionDigits: 0 })}`
+                : `${sym}${Math.abs(change * rate).toLocaleString("en-US", { maximumFractionDigits: 0 })}`
               }{" "}
-              מהביקור הקודם
+              since last visit
             </span>
           )}
-          <div className="cur-switch" role="group" aria-label="מטבע תצוגה">
+          <div className="cur-switch" role="group" aria-label="Display currency">
             {CURRENCIES.map((c) => (
               <button key={c.code} className={cur === c.code ? "active" : ""} onClick={() => pickCurrency(c.code)}>
                 {c.code}
@@ -170,20 +170,20 @@ export function HubClient({
 
         <div className="hub-graph">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-            <h3>היסטוריית שווי</h3>
+            <h3>Value history</h3>
             <div className="seg">
               <button onClick={() => setShowPct(false)} className={!showPct ? "active" : ""}>
-                {sym} ערך
+                {sym} Value
               </button>
               <button onClick={() => setShowPct(true)} className={showPct ? "active" : ""}>
-                % שינוי
+                % Change
               </button>
             </div>
           </div>
 
           {chartData.length < 2 ? (
             <p style={{ color: "var(--text-faint)", fontSize: 14, paddingTop: 20 }}>
-              הגרף יצטייר לאחר 2 ביקורים — כל יום נשמרת נקודה חדשה.
+              The graph appears after 2 visits — a new point is saved each day.
             </p>
           ) : (
             <ResponsiveContainer width="100%" height={180}>
@@ -230,7 +230,7 @@ export function HubClient({
       {/* ── Top holdings ── */}
       {top3.length > 0 && (
         <div className="card" style={{ marginBottom: 20 }}>
-          <h3 style={{ marginTop: 0, marginBottom: 16, fontSize: 15 }}>נכסים מובילים</h3>
+          <h3 style={{ marginTop: 0, marginBottom: 16, fontSize: 15 }}>Top holdings</h3>
           <div className="top-holdings">
             {top3.map((h) => {
               const pctOfTotal = totalUsd > 0 ? (h.usdValue / totalUsd) * 100 : 0;
@@ -238,7 +238,7 @@ export function HubClient({
                 <div className="th-box" key={h.id}>
                   <div className="sym">{h.symbol || h.name || "—"}</div>
                   <div className="val">{fmt(h.usdValue)}</div>
-                  <div className="pct">{pctOfTotal.toFixed(1)}% מהתיק</div>
+                  <div className="pct">{pctOfTotal.toFixed(1)}% of portfolio</div>
                 </div>
               );
             })}
@@ -250,25 +250,25 @@ export function HubClient({
       {allHoldings.length > 0 && (
         <div className="card" style={{ marginBottom: 20, padding: 0, overflowX: "auto" }}>
           <div style={{ padding: "16px 20px", borderBottom: "1px solid var(--glass-brd)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <h3 style={{ margin: 0, fontSize: 15 }}>כל האחזקות</h3>
+            <h3 style={{ margin: 0, fontSize: 15 }}>All holdings</h3>
             <div className="seg">
               <button onClick={() => setSortBy("value")} className={sortBy === "value" ? "active" : ""}>
-                לפי שווי
+                By value
               </button>
               <button onClick={() => setSortBy("name")} className={sortBy === "name" ? "active" : ""}>
-                לפי שם
+                By name
               </button>
             </div>
           </div>
           <table className="tbl">
             <thead>
               <tr>
-                <th>נכס</th>
-                <th>סוג</th>
-                <th>חשבון</th>
-                <th>כמות</th>
-                <th>שווי ({cur})</th>
-                <th>% מהתיק</th>
+                <th>Asset</th>
+                <th>Type</th>
+                <th>Account</th>
+                <th>Qty</th>
+                <th>Value ({cur})</th>
+                <th>% of portfolio</th>
                 <th></th>
               </tr>
             </thead>
@@ -283,7 +283,7 @@ export function HubClient({
                     </td>
                     <td><span className="pill" style={{ fontSize: 11 }}>{ASSET_LABEL[h.asset_type] ?? h.asset_type}</span></td>
                     <td className="muted">{h.accountName}</td>
-                    <td>{h.asset_type === "manual" ? "—" : Number(h.quantity).toLocaleString("he-IL", { maximumFractionDigits: 6 })}</td>
+                    <td>{h.asset_type === "manual" ? "—" : Number(h.quantity).toLocaleString("en-US", { maximumFractionDigits: 6 })}</td>
                     <td style={{ fontWeight: 700 }}>{fmt(h.usdValue)}</td>
                     <td>
                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -296,7 +296,7 @@ export function HubClient({
                     <td>
                       <form action={deleteHolding}>
                         <input type="hidden" name="id" value={h.id} />
-                        <button className="icon-btn danger" type="submit">מחק</button>
+                        <button className="icon-btn danger" type="submit">Delete</button>
                       </form>
                     </td>
                   </tr>
@@ -310,7 +310,7 @@ export function HubClient({
       {/* ── Accounts with add holding forms ── */}
       {accounts.length === 0 ? (
         <div className="card empty-state" style={{ padding: 48, textAlign: "center" }}>
-          <p className="muted">עדיין לא הוספת חשבונות. התחל בהוספת בית השקעות, ארנק או קרן למטה.</p>
+          <p className="muted">No accounts yet. Start by adding a brokerage, wallet or fund below.</p>
         </div>
       ) : (
         accounts.map((acc) => (
@@ -324,7 +324,7 @@ export function HubClient({
               </h3>
               <form action={deleteAccount}>
                 <input type="hidden" name="id" value={acc.id} />
-                <button className="icon-btn danger" type="submit">מחק חשבון</button>
+                <button className="icon-btn danger" type="submit">Delete account</button>
               </form>
             </div>
             <AddHoldingForm accountId={acc.id} onDone={() => router.refresh()} />
@@ -334,24 +334,24 @@ export function HubClient({
 
       {/* ── Add account ── */}
       <div className="card" style={{ marginTop: 24 }}>
-        <h3 style={{ marginTop: 0 }}>הוספת חשבון / בית השקעות / ארנק</h3>
+        <h3 style={{ marginTop: 0 }}>Add account / brokerage / wallet</h3>
         <form action={addAccount} className="add-row">
           <div className="lfg">
-            <label>שם החשבון</label>
-            <input name="name" list="preset-accounts" placeholder="לדוגמה: מיטב טרייד" required />
+            <label>Account name</label>
+            <input name="name" list="preset-accounts" placeholder="e.g. Interactive Brokers" required />
             <datalist id="preset-accounts">
               {PRESET_ACCOUNTS.map((p) => <option value={p} key={p} />)}
             </datalist>
           </div>
           <div className="lfg">
-            <label>סוג</label>
+            <label>Type</label>
             <select name="type" defaultValue="broker">
               {ACCOUNT_TYPES.map((t) => (
                 <option value={t.value} key={t.value}>{t.label}</option>
               ))}
             </select>
           </div>
-          <button className="btn-blk" type="submit">הוספה</button>
+          <button className="btn-blk" type="submit">Add</button>
         </form>
       </div>
     </main>
@@ -387,7 +387,7 @@ function AddHoldingForm({ accountId, onDone }: { accountId: string; onDone: () =
       {!isCash && !isManual && <input type="hidden" name="currency" value={autoCurrency} />}
 
       <div className="lfg">
-        <label>סוג נכס</label>
+        <label>Asset type</label>
         <select name="asset_type" value={type} onChange={(e) => setType(e.target.value)}>
           {ASSET_TYPES.map((t) => (
             <option value={t.value} key={t.value}>{t.label}</option>
@@ -397,7 +397,7 @@ function AddHoldingForm({ accountId, onDone }: { accountId: string; onDone: () =
 
       {isCrypto && (
         <div className="lfg">
-          <label>מטבע קריפטו</label>
+          <label>Crypto coin</label>
           <select value={cryptoId} onChange={(e) => setCryptoId(e.target.value)}>
             {CRYPTO_COINS.map((c) => (
               <option value={c.id} key={c.id}>{c.symbol} – {c.name}</option>
@@ -408,35 +408,35 @@ function AddHoldingForm({ accountId, onDone }: { accountId: string; onDone: () =
 
       {needsSymbol && (
         <div className="lfg">
-          <label>סימול {type === "stock_il" && <span style={{ color: "var(--text-faint)", fontSize: 11 }}>(בלי .TA)</span>}</label>
+          <label>Symbol {type === "stock_il" && <span style={{ color: "var(--text-faint)", fontSize: 11 }}>(without .TA)</span>}</label>
           <input name="symbol" placeholder={type === "stock_il" ? "TEVA" : "AAPL"} dir="ltr" required />
         </div>
       )}
 
       {isManual && (
         <div className="lfg">
-          <label>שם הנכס</label>
-          <input name="name" placeholder="קרן השתלמות" required />
+          <label>Asset name</label>
+          <input name="name" placeholder="e.g. pension fund" required />
         </div>
       )}
 
       {!isManual && (
         <div className="lfg">
-          <label>{isCash ? "סכום" : "כמות"}</label>
+          <label>{isCash ? "Amount" : "Quantity"}</label>
           <input name="quantity" type="number" step="any" min="0" placeholder="0" required />
         </div>
       )}
 
       {isManual && (
         <div className="lfg">
-          <label>שווי נוכחי</label>
+          <label>Current value</label>
           <input name="manual_value" type="number" step="any" min="0" placeholder="0" required />
         </div>
       )}
 
       {(isCash || isManual) && (
         <div className="lfg">
-          <label>מטבע</label>
+          <label>Currency</label>
           <select name="currency" defaultValue="USD">
             {CURRENCIES.map((c) => (
               <option value={c.code} key={c.code}>{c.code} – {c.label}</option>
@@ -445,7 +445,7 @@ function AddHoldingForm({ accountId, onDone }: { accountId: string; onDone: () =
         </div>
       )}
 
-      <button className="btn-blk" type="submit">+ הוסף נכס</button>
+      <button className="btn-blk" type="submit">+ Add asset</button>
     </form>
   );
 }

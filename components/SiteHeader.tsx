@@ -14,9 +14,9 @@ export type SessionUser = {
 } | null;
 
 const LINKS = [
-  { href: "/#agents", label: "הסוכנים" },
-  { href: "/#process", label: "איך זה עובד" },
-  { href: "/articles", label: "מאמרים" },
+  { href: "/#agents", label: "What I do" },
+  { href: "/#process", label: "How it works" },
+  { href: "/articles", label: "How-tos" },
 ];
 
 export function SiteHeader({ user }: { user: SessionUser }) {
@@ -49,7 +49,7 @@ export function SiteHeader({ user }: { user: SessionUser }) {
   return (
     <>
       <div className="nav-wrap">
-        <nav className="nav" aria-label="ניווט ראשי">
+        <nav className="nav" aria-label="Main navigation">
           <Logo />
 
           <div className="nav-links desktop">
@@ -58,7 +58,7 @@ export function SiteHeader({ user }: { user: SessionUser }) {
                 {l.label}
               </Link>
             ))}
-            <button className="nav-link" onClick={goHub}>מרכז הנכסים</button>
+            <button className="nav-link" onClick={goHub}>Portfolio</button>
 
             {user ? (
               <div className={`dropdown ${userMenu ? "open" : ""}`} ref={userRef}>
@@ -67,18 +67,18 @@ export function SiteHeader({ user }: { user: SessionUser }) {
                   onClick={() => setUserMenu((o) => !o)}
                   aria-expanded={userMenu}
                 >
-                  {user.name?.split(" ")[0] || "החשבון שלי"}{" "}
+                  {user.name?.split(" ")[0] || "My account"}{" "}
                   <span className="chev" aria-hidden="true">▾</span>
                 </button>
                 <div className="dropdown-panel" role="menu">
                   <Link href="/hub" className="dropdown-item" onClick={() => setUserMenu(false)}>
-                    <span className="di-title">מרכז הנכסים</span>
-                    <span className="di-sub">ההשקעות שלי</span>
+                    <span className="di-title">Portfolio</span>
+                    <span className="di-sub">My investments</span>
                   </Link>
                   {user.isAdmin && (
                     <Link href="/admin" className="dropdown-item" onClick={() => setUserMenu(false)}>
-                      <span className="di-title">ניהול</span>
-                      <span className="di-sub">מאמרים, משתמשים ופרומו</span>
+                      <span className="di-title">Admin</span>
+                      <span className="di-sub">Articles, users & promo</span>
                     </Link>
                   )}
                   <button
@@ -89,22 +89,22 @@ export function SiteHeader({ user }: { user: SessionUser }) {
                       router.refresh();
                     }}
                   >
-                    <span className="di-title">התנתקות</span>
+                    <span className="di-title">Sign out</span>
                     <span className="di-sub">{user.email}</span>
                   </button>
                 </div>
               </div>
             ) : (
               <button className="nav-cta ghost" onClick={() => openAuth("login")}>
-                התחברות
+                Sign in
               </button>
             )}
-            <Link href="/#contact" className="nav-cta">דברו איתי</Link>
+            <Link href="/#contact" className="nav-cta">Get in touch</Link>
           </div>
 
           <button
             className="hamburger"
-            aria-label="פתח תפריט"
+            aria-label="Open menu"
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen(true)}
           >
@@ -114,26 +114,26 @@ export function SiteHeader({ user }: { user: SessionUser }) {
       </div>
 
       {/* Mobile menu */}
-      <div className={`mobile-nav ${mobileOpen ? "open" : ""}`} role="dialog" aria-label="תפריט">
-        <button className="close-x" aria-label="סגור" onClick={() => setMobileOpen(false)}>✕</button>
+      <div className={`mobile-nav ${mobileOpen ? "open" : ""}`} role="dialog" aria-label="Menu">
+        <button className="close-x" aria-label="Close" onClick={() => setMobileOpen(false)}>✕</button>
         {LINKS.map((l) => (
           <Link key={l.href} href={l.href} onClick={() => setMobileOpen(false)}>
             {l.label}
           </Link>
         ))}
-        <button onClick={() => { setMobileOpen(false); goHub(); }}>מרכז הנכסים</button>
-        <Link href="/#contact" onClick={() => setMobileOpen(false)}>צור קשר</Link>
+        <button onClick={() => { setMobileOpen(false); goHub(); }}>Portfolio</button>
+        <Link href="/#contact" onClick={() => setMobileOpen(false)}>Contact</Link>
         {user ? (
           <>
-            {user.isAdmin && <Link href="/admin" onClick={() => setMobileOpen(false)}>ניהול</Link>}
+            {user.isAdmin && <Link href="/admin" onClick={() => setMobileOpen(false)}>Admin</Link>}
             <button onClick={async () => { await signOutAction(); setMobileOpen(false); router.refresh(); }}>
-              התנתקות
+              Sign out
             </button>
           </>
         ) : (
           <>
-            <button onClick={() => openAuth("login")}>התחברות</button>
-            <button onClick={() => openAuth("register")}>הרשמה</button>
+            <button onClick={() => openAuth("login")}>Sign in</button>
+            <button onClick={() => openAuth("register")}>Sign up</button>
           </>
         )}
       </div>

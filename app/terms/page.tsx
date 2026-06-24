@@ -3,7 +3,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { getSessionUser } from "@/lib/auth";
 import { BRAND } from "@/lib/constants";
 
-export const metadata = { title: "תנאי שימוש ופרטיות | נועם ורדי" };
+export const metadata = { title: "Terms & Privacy | SharpenDaily" };
 
 export default async function TermsPage() {
   const user = await getSessionUser();
@@ -11,46 +11,49 @@ export default async function TermsPage() {
     <>
       <SiteHeader user={user} />
       <main className="page page-narrow">
-        <h1>תנאי שימוש ומדיניות פרטיות</h1>
-        <p className="sub">עודכן לאחרונה: מאי 2026</p>
+        <h1>Terms of Use & Privacy Policy</h1>
+        <p className="sub">Last updated: May 2026</p>
 
         <div className="card" style={{ lineHeight: 1.9 }}>
-          <h3>1. כללי</h3>
+          <h3>1. General</h3>
           <p>
-            השימוש באתר ובמרכז הנכסים האישי כפוף לתנאים שלהלן. עצם ההרשמה והשימוש
-            מהווים הסכמה מלאה לתנאים אלה.
+            Use of this site and the personal asset hub is subject to the terms below.
+            Registering and using the service constitutes full agreement to these terms.
           </p>
 
-          <h3>2. חשבון משתמש ואבטחה</h3>
+          <h3>2. Account & security</h3>
           <p>
-            הסיסמה שלך נשמרת בצורה מוצפנת (hashing) ואינה נגישה לאיש, כולל מנהל
-            המערכת. כל משתמש אחראי לשמירת פרטי הגישה שלו. המידע הפיננסי שתזין נשמר
-            בבידוד מלא ונגיש אך ורק לך.
+            Your password is stored hashed and is not accessible to anyone, including the
+            site administrator. Each user is responsible for keeping their access details
+            safe. Any financial data you enter is kept fully isolated and accessible only
+            to you.
           </p>
 
-          <h3>3. מרכז הנכסים — הבהרה</h3>
+          <h3>3. Asset hub — disclaimer</h3>
           <p>
-            הנתונים, השערים והגרפים המוצגים במרכז הנכסים הם לצורכי מעקב והמחשה
-            בלבד, ואינם מהווים ייעוץ השקעות, המלצה או תחליף לייעוץ פיננסי מקצועי.
-            מחירים מתקבלים מספקים חיצוניים ועשויים להתעדכן בעיכוב.
+            The data, prices and charts shown in the asset hub are for tracking and
+            illustration only, and do not constitute investment advice, a recommendation,
+            or a substitute for professional financial advice. Prices come from third-party
+            providers and may be delayed.
           </p>
 
-          <h3>4. פרטיות ודיוור</h3>
+          <h3>4. Privacy & email</h3>
           <p>
-            אנו אוספים אך ורק את המידע הדרוש לתפעול השירות. הסכמה לקבלת דיוור היא
-            אופציונלית וניתן לבטלה בכל עת. לא נעביר את פרטיך לצד שלישי ללא הסכמתך.
+            We collect only the information needed to run the service. Consent to receive
+            email is optional and can be withdrawn at any time. We will not share your
+            details with third parties without your consent.
           </p>
 
-          <h3>5. עוגיות (Cookies)</h3>
+          <h3>5. Cookies</h3>
           <p>
-            האתר משתמש בעוגיות חיוניות לצורך ניהול ההתחברות וזכירת החשבון שלך בעת
-            חזרה לאתר.
+            The site uses essential cookies to manage sign-in and remember your account
+            when you return.
           </p>
 
-          <h3>6. יצירת קשר</h3>
+          <h3>6. Contact</h3>
           <p>
-            בכל שאלה: <a href={`mailto:${BRAND.email}`} style={{ textDecoration: "underline" }}>{BRAND.email}</a>
-            {" "}· {BRAND.phone}
+            For any question:{" "}
+            <a href={`mailto:${BRAND.email}`} style={{ textDecoration: "underline" }}>{BRAND.email}</a>
           </p>
         </div>
       </main>

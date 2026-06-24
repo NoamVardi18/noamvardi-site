@@ -9,7 +9,7 @@ export function PromoSection({ promo, preview = false }: { promo: Promo | null; 
   const features = Array.isArray(promo.features) ? promo.features : [];
 
   return (
-    <section className="section" id="promo" aria-label="הצעה מיוחדת">
+    <section className="section" id="promo" aria-label="Special offer">
       <div className="section-inner">
         <div className={`promo-card ${preview ? "" : "fade-up"}`}>
           {promo.badge_text && <span className="promo-badge">{promo.badge_text}</span>}
@@ -30,7 +30,7 @@ export function PromoSection({ promo, preview = false }: { promo: Promo | null; 
           <div className="promo-price-box">
             {promo.price_text && <div className="price">{promo.price_text}</div>}
             <a href={promo.cta_link || "#contact"} className="btn-primary">
-              {promo.cta_text || "דברו איתי"}
+              {promo.cta_text || "Get in touch"}
             </a>
           </div>
         </div>

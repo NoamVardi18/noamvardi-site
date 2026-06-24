@@ -28,7 +28,7 @@ const CHAT_DURATIONS = [1400, 1300, 2600, 1500, 1300, 2600, 2200];
 function SupportAgentDemo() {
   const step = useLoop(CHAT_DURATIONS);
   return (
-    <div className="demo-shell" dir="rtl">
+    <div className="demo-shell" dir="ltr">
       <div className="demo-bar">
         <span className="dot" />
         <span className="t">LIVE · 03:12 AM</span>
@@ -36,28 +36,28 @@ function SupportAgentDemo() {
       <div className="chat-feed">
         {step >= 0 && (
           <div className="bubble user" key={`u1-${step === 0}`}>
-            <span className="who">לקוח · 03:12</span>
-            אפשר להזיז את ההזמנה שלי למחר?
+            <span className="who">Customer · 03:12</span>
+            Can I move my booking to tomorrow?
           </div>
         )}
         {step === 1 && <div className="bubble bot"><Typing /></div>}
         {step >= 2 && (
           <div className="bubble bot">
-            <span className="who">הסוכן של העסק</span>
-            בטח! פיניתי לך מקום מחר ב־18:00. שלחתי אישור ב־SMS ✓
+            <span className="who">Business agent</span>
+            Done! Moved you to tomorrow at 6:00 PM. Confirmation sent by SMS ✓
           </div>
         )}
         {step >= 3 && (
           <div className="bubble user">
-            <span className="who">לקוח · 03:13</span>
-            וואו, תודה!
+            <span className="who">Customer · 03:13</span>
+            Wow, thanks!
           </div>
         )}
         {step === 4 && <div className="bubble bot"><Typing /></div>}
         {step >= 5 && (
           <div className="bubble bot">
-            <span className="who">הסוכן של העסק</span>
-            בשמחה 🙂 נתראה מחר!
+            <span className="who">Business agent</span>
+            Anytime 🙂 See you tomorrow!
           </div>
         )}
       </div>
@@ -75,10 +75,10 @@ function SchedulerDemo() {
   const phase = useLoop(CAL_DURATIONS);
   const cancelledIdx = 5;
   return (
-    <div className="demo-shell" dir="rtl">
+    <div className="demo-shell" dir="ltr">
       <div className="demo-bar">
         <span className="dot" />
-        <span className="t">יומן · יום שלישי</span>
+        <span className="t">Calendar · Tuesday</span>
       </div>
       <div className="cal-grid">
         {SLOTS.map((s, i) => {
@@ -92,10 +92,10 @@ function SchedulerDemo() {
         })}
       </div>
       <div className="cal-note">
-        {phase === 0 && "היום מלא. רשימת המתנה: 3 לקוחות."}
-        {phase === 1 && <>התקבל ביטול של הרגע האחרון ב־<span className="hl">17:00</span></>}
-        {phase === 2 && "הסוכן עובר על רשימת ההמתנה ומתקשר…"}
-        {phase === 3 && <><span className="hl">התור שובץ מחדש</span> ללקוח מרשימת ההמתנה ✓</>}
+        {phase === 0 && "Today is full. Waitlist: 3 customers."}
+        {phase === 1 && <>Last-minute cancellation at <span className="hl">5:00 PM</span></>}
+        {phase === 2 && "Agent is working the waitlist…"}
+        {phase === 3 && <><span className="hl">Slot refilled</span> from the waitlist ✓</>}
       </div>
     </div>
   );
@@ -105,16 +105,16 @@ function SchedulerDemo() {
 
 const PIPE_DURATIONS = [1600, 1600, 1600, 3000];
 const LEADS = [
-  { name: "דנה", offset: 0 },
-  { name: "יואב", offset: 1 },
-  { name: "מיכל", offset: 2 },
+  { name: "Dana", offset: 0 },
+  { name: "Yoav", offset: 1 },
+  { name: "Michal", offset: 2 },
 ];
-const STAGES = ["ליד חדש", "נשלחה הודעה", "תזכורת חכמה", "נקבעה שיחה ✓"];
+const STAGES = ["New lead", "Message sent", "Smart reminder", "Call booked ✓"];
 
 function LeadFollowupDemo() {
   const tick = useLoop(PIPE_DURATIONS);
   return (
-    <div className="demo-shell" dir="rtl">
+    <div className="demo-shell" dir="ltr">
       <div className="demo-bar">
         <span className="dot" />
         <span className="t">PIPELINE</span>
@@ -138,7 +138,7 @@ function LeadFollowupDemo() {
         })}
       </div>
       <div className="cal-note" style={{ marginTop: 14 }}>
-        אף ליד לא נשכח — הסוכן עוקב עד שנקבעת שיחה.
+        No lead forgotten — the agent follows up until a call is booked.
       </div>
     </div>
   );
@@ -146,7 +146,7 @@ function LeadFollowupDemo() {
 
 /* ── 4. Ops: document → structured data ──────────────────────────── */
 
-const OPS_FIELDS = ["INV-2041", "₪ 4,820", "12/06/26", "אושר", "ספק: י.כ", "הוזן ✓"];
+const OPS_FIELDS = ["INV-2041", "$ 4,820", "06/12/26", "Approved", "Vendor: J.K", "Entered ✓"];
 
 function OpsDemo() {
   const [run, setRun] = useState(0);
@@ -155,7 +155,7 @@ function OpsDemo() {
     return () => clearInterval(t);
   }, []);
   return (
-    <div className="demo-shell" dir="rtl">
+    <div className="demo-shell" dir="ltr">
       <div className="demo-bar">
         <span className="dot" />
         <span className="t">DATA ENTRY</span>
@@ -165,7 +165,7 @@ function OpsDemo() {
           <div className="ops-line" /><div className="ops-line" /><div className="ops-line" />
           <div className="ops-line" /><div className="ops-line" />
         </div>
-        <span className="ops-arrow" aria-hidden="true">←</span>
+        <span className="ops-arrow" aria-hidden="true">→</span>
         <div className="ops-table" key={run}>
           {[0, 1, 2].map((row) => (
             <div className="ops-cell" key={row} style={{ animationDelay: `${0.4 + row * 0.5}s` }}>
@@ -176,7 +176,7 @@ function OpsDemo() {
         </div>
       </div>
       <div className="cal-note" style={{ marginTop: 14 }}>
-        חשבונית נקלטת, מפוענחת ומוזנת למערכת — בלי יד אדם.
+        Invoices are captured, parsed and entered into your system — no human touch.
       </div>
     </div>
   );
@@ -187,42 +187,42 @@ function OpsDemo() {
 const AGENTS = [
   {
     tagline: "Support, around the clock",
-    title: "סוכן שירות לקוחות 24/7",
-    desc: "עונה ללקוחות בוואטסאפ ובאתר — בשלוש לפנות בוקר, בשבת, בחג. מחובר למערכות שלכם ופותר באמת, לא רק עונה.",
+    title: "24/7 customer support agent",
+    desc: "Answers customers on WhatsApp and your site — at 3 AM, on weekends, on holidays. Connected to your systems and actually resolves, not just replies.",
     Demo: SupportAgentDemo,
   },
   {
     tagline: "Never an empty slot",
-    title: "תיאום פגישות ושיבוץ חכם",
-    desc: "ביטול של הרגע האחרון? הסוכן כבר עבר על רשימת ההמתנה, שיבץ לקוח אחר ושלח אישורים. היומן נשאר מלא.",
+    title: "Smart scheduling & booking",
+    desc: "Last-minute cancellation? The agent already worked the waitlist, booked another customer and sent confirmations. The calendar stays full.",
     Demo: SchedulerDemo,
   },
   {
     tagline: "Every lead, followed",
-    title: "מעקב לידים ומכירות",
-    desc: "ליד שלא קיבל מענה תוך שעה — הולך לאיבוד. הסוכן עוקב, מתזכר ומחמם כל פנייה עד שנקבעת שיחה.",
+    title: "Lead follow-up & sales",
+    desc: "A lead with no reply within an hour is lost. The agent follows up, reminds and warms every inquiry until a call is booked.",
     Demo: LeadFollowupDemo,
   },
   {
     tagline: "Paperwork that does itself",
-    title: "תפעול והזנת נתונים",
-    desc: "חשבוניות, טפסים והזמנות נקלטים, מפוענחים ומוזנים למערכות — בלי שגיאות העתקה ובלי ערימת ניירת.",
+    title: "Operations & data entry",
+    desc: "Invoices, forms and orders are captured, parsed and entered into your systems — no copy errors, no paperwork pile.",
     Demo: OpsDemo,
   },
 ];
 
 export function AgentShowcase() {
   return (
-    <section className="section" id="agents" aria-label="הסוכנים">
+    <section className="section" id="agents" aria-label="The agents">
       <div className="section-inner">
         <div className="section-head fade-up">
           <span className="kicker">THE AGENT WORKFORCE</span>
           <h2>
-            לא עוד תוכנה. <span className="serif-accent">עובדים דיגיטליים.</span>
+            Not more software. <span className="serif-accent">Digital workers.</span>
           </h2>
           <p>
-            כל כרטיס כאן הוא סוכן אמיתי שאפשר להכניס לעסק — צפו בו עובד.
-            הסוכנים מתחברים למערכות הקיימות שלכם ומבצעים את העבודה מקצה לקצה.
+            Every card here is a real agent you can drop into your business — watch it
+            work. The agents connect to your existing systems and do the job end-to-end.
           </p>
         </div>
         <div className="agents-grid">

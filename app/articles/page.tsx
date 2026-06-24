@@ -4,7 +4,7 @@ import { ArticleCard, type Article } from "@/components/ArticleCard";
 import { getSessionUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata = { title: "מאמרים | נועם ורדי" };
+export const metadata = { title: "How-tos | SharpenDaily" };
 export const revalidate = 60;
 
 export default async function ArticlesPage() {
@@ -22,13 +22,13 @@ export default async function ArticlesPage() {
     <>
       <SiteHeader user={user} />
       <main className="page">
-        <span className="kicker">INSIGHTS</span>
-        <h1>מאמרים</h1>
-        <p className="sub">תובנות על סוכני AI, אוטומציה עסקית ועתיד העבודה — ולצידם ארכיון מאמרי שוק ההון</p>
+        <span className="kicker">HOW-TOS</span>
+        <h1>How-tos</h1>
+        <p className="sub">The full written how-to behind every SharpenDaily video — the exact steps, prompts and tools.</p>
 
         {articles.length === 0 ? (
           <div className="empty-state">
-            <p>עדיין אין מאמרים שפורסמו — בקרוב יעלה כאן תוכן חדש.</p>
+            <p>No how-tos published yet — new content is coming soon.</p>
           </div>
         ) : (
           <div className="articles-grid">

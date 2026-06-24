@@ -1,36 +1,36 @@
 const STEPS = [
   {
     no: "01",
-    title: "אבחון",
-    desc: "ממפים יחד את המשימות שגוזלות הכי הרבה זמן בעסק — ומסמנים את אלה שסוכן יכול לקחת מחר בבוקר.",
+    title: "Diagnose",
+    desc: "We map the tasks eating the most time in your business — and mark the ones an agent can take over tomorrow morning.",
   },
   {
     no: "02",
-    title: "בנייה",
-    desc: "סוכן מותאם אישית לעסק שלכם: מחובר ליומן, ל־CRM, לוואטסאפ — למערכות שכבר יש לכם.",
+    title: "Build",
+    desc: "A custom agent for your business: connected to your calendar, CRM and WhatsApp — the systems you already use.",
   },
   {
     no: "03",
-    title: "השקה",
-    desc: "הסוכן מתחיל לעבוד על משימות אמיתיות, תחת השגחה צמודה, עד שהוא מדויק בכל תרחיש.",
+    title: "Launch",
+    desc: "The agent starts working on real tasks, closely supervised, until it's accurate in every scenario.",
   },
   {
     no: "04",
-    title: "ליווי",
-    desc: "ניטור שוטף, שיפורים והרחבה לסוכנים נוספים — כוח העבודה הדיגיטלי גדל עם העסק.",
+    title: "Scale",
+    desc: "Ongoing monitoring, improvements and more agents — your digital workforce grows with the business.",
   },
 ];
 
 export function ProcessSection() {
   return (
-    <section className="section" id="process" aria-label="איך זה עובד">
+    <section className="section" id="process" aria-label="How it works">
       <div className="section-inner">
         <div className="section-head fade-up">
           <span className="kicker">FROM IDEA TO WORKFORCE</span>
           <h2>
-            איך זה <span className="serif-accent">קורה בפועל.</span>
+            How it <span className="serif-accent">actually happens.</span>
           </h2>
-          <p>תהליך קצר וממוקד — מהשיחה הראשונה ועד סוכן שעובד אצלכם בעסק.</p>
+          <p>A short, focused process — from the first conversation to an agent working in your business.</p>
         </div>
         <div className="process-grid">
           {STEPS.map((s, i) => (

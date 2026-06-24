@@ -35,7 +35,7 @@ export function ArticleCard({ a }: { a: Article }) {
         <span className="pill">{categoryLabel(a.category)}</span>
         <h3>{a.title}</h3>
         {a.excerpt && <p>{a.excerpt}</p>}
-        <span className="acard-more">קראו עוד ←</span>
+        <span className="acard-more">Read more →</span>
       </div>
     </Link>
   );

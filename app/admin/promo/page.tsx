@@ -6,7 +6,7 @@ import { PromoEditor } from "@/components/admin/PromoEditor";
 import { getSessionUser } from "@/lib/auth";
 import { getPromo } from "@/lib/promo";
 
-export const metadata = { title: "ניהול פרומו | נועם ורדי" };
+export const metadata = { title: "Promo | Admin" };
 
 export default async function AdminPromoPage() {
   const user = await getSessionUser();
@@ -19,10 +19,10 @@ export default async function AdminPromoPage() {
       <SiteHeader user={user} />
       <main className="page">
         <span className="kicker">PROMO MODULE</span>
-        <h1>הצעה בדף הבית</h1>
+        <h1>Homepage offer</h1>
         <p className="sub">
-          מלאו את הפרטים, הפעילו את המתג — וההצעה תופיע בדף הבית בעיצוב המוכן.
-          אפשר לכבות או לעדכן בכל רגע.
+          Fill in the details, flip the switch — and the offer appears on the homepage in
+          the ready-made design. Turn it off or update it anytime.
         </p>
         <AdminNav active="/admin/promo" />
         {promo ? (
@@ -30,7 +30,7 @@ export default async function AdminPromoPage() {
         ) : (
           <div className="card">
             <p className="muted" style={{ margin: 0 }}>
-              לא נמצאה רשומת פרומו במסד הנתונים. הריצו את המיגרציה promos_and_contact_messages.
+              No promo row found in the database. Run the promos_and_contact_messages migration.
             </p>
           </div>
         )}

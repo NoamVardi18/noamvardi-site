@@ -6,7 +6,7 @@ import { getSessionUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { toggleAdminAction } from "./actions";
 
-export const metadata = { title: "ניהול משתמשים | נועם ורדי" };
+export const metadata = { title: "Users | Admin" };
 
 export default async function AdminUsersPage() {
   const user = await getSessionUser();
@@ -28,38 +28,38 @@ export default async function AdminUsersPage() {
       <SiteHeader user={user} />
       <main className="page">
         <span className="kicker">USERS</span>
-        <h1>ניהול משתמשים</h1>
-        <p className="sub">{profiles.length} משתמשים רשומים</p>
+        <h1>Users</h1>
+        <p className="sub">{profiles.length} registered users</p>
         <AdminNav active="/admin/users" />
 
         <div className="card" style={{ padding: 0, overflowX: "auto" }}>
           <table className="tbl">
             <thead>
               <tr>
-                <th>שם</th>
-                <th>אימייל</th>
-                <th>תאריך הרשמה</th>
-                <th>סטטוס</th>
-                <th>פעולה</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Joined</th>
+                <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {profiles.map((p) => {
                 const isMe = p.id === currentUserId;
-                const joinDate = new Date(p.created_at).toLocaleDateString("he-IL", {
+                const joinDate = new Date(p.created_at).toLocaleDateString("en-US", {
                   day: "numeric", month: "long", year: "numeric",
                 });
                 return (
                   <tr key={p.id}>
                     <td style={{ fontWeight: 600 }}>
                       {p.full_name || "—"}
-                      {isMe && <span className="pill" style={{ marginInlineStart: 8, fontSize: 11 }}>אתה</span>}
+                      {isMe && <span className="pill" style={{ marginInlineStart: 8, fontSize: 11 }}>You</span>}
                     </td>
-                    <td className="muted" style={{ direction: "ltr", textAlign: "right" }}>{p.email}</td>
+                    <td className="muted" style={{ direction: "ltr" }}>{p.email}</td>
                     <td className="muted">{joinDate}</td>
                     <td>
                       <span className={`pill ${p.is_admin ? "gold" : ""}`}>
-                        {p.is_admin ? "אדמין" : "משתמש"}
+                        {p.is_admin ? "Admin" : "User"}
                       </span>
                     </td>
                     <td>
@@ -71,7 +71,7 @@ export default async function AdminUsersPage() {
                             className={`icon-btn${p.is_admin ? " danger" : ""}`}
                             type="submit"
                           >
-                            {p.is_admin ? "הסר אדמין" : "הפוך לאדמין"}
+                            {p.is_admin ? "Remove admin" : "Make admin"}
                           </button>
                         </form>
                       )}
