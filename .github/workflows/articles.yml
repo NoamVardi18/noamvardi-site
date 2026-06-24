@@ -1,9 +1,13 @@
 name: Publish Hebrew AI Automation Articles
 
+# DISABLED 2026-06-24: site rebranded to SharpenDaily (English). This cron posted
+# Hebrew articles and would pollute the English site. Script + manual run kept on
+# purpose (infrastructure may be reused). To re-enable, uncomment the schedule.
+# English how-tos now come from the `article-forge` skill instead.
 on:
-  schedule:
-    # Weekly AI-agents trend column — every Sunday at 20:00 Israel time (17:00 UTC)
-    - cron: "0 17 * * 0"
+  # schedule:
+  #   # Weekly AI-agents trend column — every Sunday at 20:00 Israel time (17:00 UTC)
+  #   - cron: "0 17 * * 0"
   workflow_dispatch:
     inputs:
       article_type:

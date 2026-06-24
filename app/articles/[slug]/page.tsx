@@ -88,12 +88,34 @@ export default async function ArticlePage({
       </div>
     );
   };
-  const renderPara = (para: string, i: number) =>
-    isTableBlock(para) ? (
-      renderTable(para, i)
-    ) : para.startsWith("## ") ? (
-      <h2 key={i}>{para.slice(3)}</h2>
+  const lines = (block: string) => block.split("\n").filter((l) => l.trim());
+  const isBulletBlock = (b: string) => lines(b).every((l) => /^[-*]\s+/.test(l.trim()));
+  const isNumberBlock = (b: string) => lines(b).every((l) => /^\d+[.)]\s+/.test(l.trim()));
+  // bold the leading "Label:" in a list item so lists read as a scannable spec
+  const renderItem = (text: string, key: number) => {
+    const m = text.match(/^([^:]{1,40}):\s+(.*)$/s);
+    return m ? (
+      <li key={key}><strong>{m[1]}:</strong> {m[2]}</li>
     ) : (
+      <li key={key}>{text}</li>
+    );
+  };
+  const renderPara = (para: string, i: number) => {
+    if (isTableBlock(para)) return renderTable(para, i);
+    if (para.startsWith("## ")) return <h2 key={i}>{para.slice(3)}</h2>;
+    if (lines(para).length >= 2 && isBulletBlock(para))
+      return (
+        <ul className="article-list" key={i}>
+          {lines(para).map((l, j) => renderItem(l.trim().replace(/^[-*]\s+/, ""), j))}
+        </ul>
+      );
+    if (lines(para).length >= 2 && isNumberBlock(para))
+      return (
+        <ol className="article-list" key={i}>
+          {lines(para).map((l, j) => renderItem(l.trim().replace(/^\d+[.)]\s+/, ""), j))}
+        </ol>
+      );
+    return (
       <p key={i}>
         {para.split("\n").map((line, j, arr) => (
           <span key={j}>
@@ -103,6 +125,7 @@ export default async function ArticlePage({
         ))}
       </p>
     );
+  };
 
   return (
     <>
