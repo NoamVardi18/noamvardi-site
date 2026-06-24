@@ -22,9 +22,9 @@ export default async function ArticlesPage() {
     <>
       <SiteHeader user={user} />
       <main className="page">
-        <span className="kicker">HOW-TOS</span>
-        <h1>How-tos</h1>
-        <p className="sub">The full written how-to behind every SharpenDaily video — the exact steps, prompts and tools.</p>
+        <span className="kicker">THE VAULT</span>
+        <h1>The Vault</h1>
+        <p className="sub">Every SharpenDaily how-to, prompt, tool and repo — the full written build behind each video. Free with your email.</p>
 
         {articles.length === 0 ? (
           <div className="empty-state">

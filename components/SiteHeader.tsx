@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Logo } from "./Logo";
-import { AuthDrawer } from "./AuthDrawer";
 import { signOutAction } from "@/app/auth/actions";
 
 export type SessionUser = {
@@ -16,15 +15,13 @@ export type SessionUser = {
 const LINKS = [
   { href: "/about#agents", label: "What I do" },
   { href: "/about#process", label: "How it works" },
-  { href: "/articles", label: "How-tos" },
+  { href: "/articles", label: "The Vault" },
 ];
 
 export function SiteHeader({ user }: { user: SessionUser }) {
   const router = useRouter();
   const [userMenu, setUserMenu] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const userRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -34,12 +31,6 @@ export function SiteHeader({ user }: { user: SessionUser }) {
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
-
-  function openAuth(mode: "login" | "register") {
-    setAuthMode(mode);
-    setDrawerOpen(true);
-    setMobileOpen(false);
-  }
 
   return (
     <>
@@ -54,7 +45,8 @@ export function SiteHeader({ user }: { user: SessionUser }) {
               </Link>
             ))}
 
-            {user ? (
+            {/* Account menu shows only for the admin (you); readers never sign in. */}
+            {user && (
               <div className={`dropdown ${userMenu ? "open" : ""}`} ref={userRef}>
                 <button
                   className="nav-cta ghost dropdown-trigger"
@@ -90,10 +82,6 @@ export function SiteHeader({ user }: { user: SessionUser }) {
                   </button>
                 </div>
               </div>
-            ) : (
-              <button className="nav-cta ghost" onClick={() => openAuth("login")}>
-                Sign in
-              </button>
             )}
             <Link href="/about#contact" className="nav-cta">Get in touch</Link>
           </div>
@@ -118,27 +106,15 @@ export function SiteHeader({ user }: { user: SessionUser }) {
           </Link>
         ))}
         <Link href="/about#contact" onClick={() => setMobileOpen(false)}>Contact</Link>
-        {user ? (
+        {user && (
           <>
             {user.isAdmin && <Link href="/admin" onClick={() => setMobileOpen(false)}>Admin</Link>}
             <button onClick={async () => { await signOutAction(); setMobileOpen(false); router.refresh(); }}>
               Sign out
             </button>
           </>
-        ) : (
-          <>
-            <button onClick={() => openAuth("login")}>Sign in</button>
-            <button onClick={() => openAuth("register")}>Sign up</button>
-          </>
         )}
       </div>
-
-      <AuthDrawer
-        open={drawerOpen}
-        mode={authMode}
-        setMode={setAuthMode}
-        onClose={() => setDrawerOpen(false)}
-      />
     </>
   );
 }

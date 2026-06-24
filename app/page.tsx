@@ -93,8 +93,8 @@ export default async function HomePage() {
             <span className="sdl-brand-name">SharpenDaily</span>
           </Link>
           <div className="sdl-nav-links">
-            <a href="#get">What you get</a>
-            <Link href="/about">What I do</Link>
+            <Link href="/articles">The Vault</Link>
+            <Link href="/about">What I do →</Link>
           </div>
         </nav>
 
@@ -220,6 +220,7 @@ export default async function HomePage() {
             <a href={SD.socials.youtube}>YouTube</a>
             <a href={SD.socials.tiktok}>TikTok</a>
             <a href={SD.socials.instagram}>Instagram</a>
+            <Link href="/articles">The Vault</Link>
             <Link href="/about">What I do</Link>
           </div>
         </footer>

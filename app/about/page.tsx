@@ -35,27 +35,42 @@ export default async function AboutPage() {
       <a href="#main" className="skip-link">Skip to main content</a>
       <SiteHeader user={user} />
       <main id="main">
-        {/* ── BANNER (regenerate via claude.ai — see runbook prompt) ── */}
+        {/* ── BANNER (ported from SharpenDaily Hero.dc.html) ── */}
         <section className="sdl-banner">
           <div className="sdl-banner-inner">
             <span className="sdl-badge">
-              <svg width="11" height="11" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 1 L13.6 9.4 L22 12 L13.6 14.6 L12 23 L10.4 14.6 L2 12 L10.4 9.4 Z" fill="var(--accent)" />
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 1 L13.6 9.2 L21.8 11 L13.6 12.8 L12 21 L10.4 12.8 L2.2 11 L10.4 9.2 Z" fill="var(--accent)" />
               </svg>
               <span>AI, applied to real skills</span>
             </span>
             <h1>
-              I build with AI — and show you{" "}
-              <span className="sdl-acc">exactly how</span>
+              I build real things with AI
+              <br />
+              and show you <span className="sdl-acc">exactly</span> how.
             </h1>
             <p>
-              From agents and automations to the prompts and tools behind every build. Watch the
-              Short, then get the full how-to — free.
+              I turn AI into agents, automations and tools you can actually use — and every Short
+              comes with the full how-to, free.
             </p>
-            <div className="sdl-banner-cta">
-              <Link href="/" className="btn-primary">Get the how-tos</Link>
-              <a href="#contact" className="btn-glass">Get in touch</a>
+            <div className="sdl-chips">
+              <span>AI agents</span>
+              <span>Automation</span>
+              <span>Web &amp; product builds</span>
             </div>
+            <div className="sdl-banner-cta">
+              <Link href="/" className="primary">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 1 L13.6 9.2 L21.8 11 L13.6 12.8 L12 21 L10.4 12.8 L2.2 11 L10.4 9.2 Z" fill="#14110F" />
+                </svg>
+                Get the how-tos
+              </Link>
+              <a href="#contact" className="ghost">Get in touch</a>
+            </div>
+          </div>
+          <div className="sdl-scroll" aria-hidden="true">
+            <span className="label">Scroll for more</span>
+            <span className="arrow">↓</span>
           </div>
         </section>
 

@@ -12,7 +12,7 @@ export const metadata = { title: "Admin | SharpenDaily" };
 
 export default async function AdminPage() {
   const user = await getSessionUser();
-  if (!user) redirect("/");
+  if (!user) redirect("/login");
   if (!user.isAdmin) redirect("/");
 
   const supabase = await createClient();

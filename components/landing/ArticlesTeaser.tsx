@@ -8,13 +8,13 @@ export function ArticlesTeaser({ articles }: { articles: Article[] }) {
       <div className="section-inner">
         <div className="section-head fade-up" style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", justifyContent: "space-between", gap: 18, maxWidth: "none" }}>
           <div>
-            <span className="kicker">HOW-TOS</span>
+            <span className="kicker">THE VAULT</span>
             <h2 style={{ margin: 0 }}>
               The full how-to behind <span className="serif-accent">every video.</span>
             </h2>
           </div>
           <Link href="/articles" className="btn-glass" style={{ padding: "11px 24px" }}>
-            All how-tos →
+            Open The Vault →
           </Link>
         </div>
         <div className="articles-grid">
