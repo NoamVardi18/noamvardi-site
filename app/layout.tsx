@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Inter, Instrument_Serif } from "next/font/google";
+import { Space_Grotesk, Hanken_Grotesk, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 
 // SharpenDaily — English LTR brand: bold geometric display + clean body.
@@ -10,7 +10,7 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
-const inter = Inter({
+const hanken = Hanken_Grotesk({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-sd-body",
@@ -44,7 +44,7 @@ export default function RootLayout({
     <html
       lang="en"
       dir="ltr"
-      className={`${spaceGrotesk.variable} ${inter.variable} ${instrument.variable} theme-sharpen`}
+      className={`${spaceGrotesk.variable} ${hanken.variable} ${instrument.variable} theme-sharpen`}
     >
       <body>
         <div className="atmosphere" aria-hidden="true" />

@@ -5,27 +5,35 @@ import { useRouter } from "next/navigation";
 
 export function SubscribeForm({
   sourceVideo,
-  cta = "Unlock free",
+  cta = "Unlock The Vault",
+  consentLabel = "Yes — email me new how-tos + the weekly Vault. Unsubscribe anytime.",
   onDone,
 }: {
   sourceVideo?: string;
   cta?: string;
+  consentLabel?: string;
   onDone?: () => void;
 }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [consent, setConsent] = useState(false);
   const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [msg, setMsg] = useState("");
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (!consent) {
+      setState("error");
+      setMsg("Please tick the box so I can send you the how-tos.");
+      return;
+    }
     setState("loading");
     setMsg("");
     try {
       const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, source_video: sourceVideo }),
+        body: JSON.stringify({ email, consent, source_video: sourceVideo }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -45,25 +53,36 @@ export function SubscribeForm({
   if (state === "done") {
     return (
       <p className="sd-form-done">
-        You&apos;re in. Check your inbox to confirm — every future how-to is free.
+        You&apos;re in. Check your inbox to confirm — The Vault is unlocked, every future how-to is free.
       </p>
     );
   }
 
   return (
     <form className="sd-form" onSubmit={submit}>
-      <input
-        type="email"
-        required
-        placeholder="you@email.com"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        disabled={state === "loading"}
-        aria-label="Email"
-      />
-      <button type="submit" className="btn-primary" disabled={state === "loading"}>
-        {state === "loading" ? "…" : cta}
-      </button>
+      <div className="sd-form-row">
+        <input
+          type="email"
+          required
+          placeholder="you@email.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          disabled={state === "loading"}
+          aria-label="Email"
+        />
+        <button type="submit" className="btn-primary" disabled={state === "loading"}>
+          {state === "loading" ? "…" : cta}
+        </button>
+      </div>
+      <label className="sd-consent">
+        <input
+          type="checkbox"
+          checked={consent}
+          onChange={(e) => setConsent(e.target.checked)}
+          aria-label="Consent to receive emails"
+        />
+        <span>{consentLabel}</span>
+      </label>
       {state === "error" && <span className="sd-form-err">{msg}</span>}
     </form>
   );

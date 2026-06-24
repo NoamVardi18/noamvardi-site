@@ -24,6 +24,7 @@ type Holding = {
 export default async function HubPage() {
   const user = await getSessionUser();
   if (!user) redirect("/");
+  if (!user.isAdmin) redirect("/"); // portfolio is admin-only and unlisted
 
   const supabase = await createClient();
   const { data: authData } = await supabase.auth.getUser();

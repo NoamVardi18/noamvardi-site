@@ -6,7 +6,7 @@ import { SD, SD_ACCESS_COOKIE } from "@/lib/sd";
 const YEAR = 60 * 60 * 24 * 365;
 
 export async function POST(req: NextRequest) {
-  let body: { email?: string; source_video?: string };
+  let body: { email?: string; source_video?: string; consent?: boolean };
   try {
     body = await req.json();
   } catch {
@@ -20,13 +20,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Enter a valid email" }, { status: 422 });
   }
 
+  // Explicit opt-in is required before we store the address or send anything.
+  if (body.consent !== true) {
+    return NextResponse.json({ error: "Please confirm you want the emails" }, { status: 422 });
+  }
+
   const supabase = createServiceClient();
 
   // Upsert keeps one row per (email, brand); returns the token for the confirm link.
   const { data, error } = await supabase
     .from("subscribers")
     .upsert(
-      { email, brand: SD.brand, source_video: source },
+      { email, brand: SD.brand, source_video: source, consent: true },
       { onConflict: "email,brand", ignoreDuplicates: false }
     )
     .select("token, confirmed")

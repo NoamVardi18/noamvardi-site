@@ -49,7 +49,7 @@ const shell = (inner: string) => `
 
 export function confirmEmail(confirmUrl: string) {
   return shell(`
-    <p style="font-size:16px;margin:0 0 8px">Confirm your email to keep your free access.</p>
-    <p style="font-size:14px;color:rgba(244,241,234,0.64);margin:0 0 24px">You can already read this one — confirm so every future how-to + the weekly newsletter reach you free.</p>
-    <a href="${confirmUrl}" style="display:inline-block;background:#C8862B;color:#14110F;font-weight:700;text-decoration:none;padding:12px 24px;border-radius:100px">Confirm & unlock everything</a>`);
+    <p style="font-size:16px;margin:0 0 8px">Confirm your email to keep The Vault unlocked.</p>
+    <p style="font-size:14px;color:rgba(244,241,234,0.64);margin:0 0 24px">You can already read today's how-to — confirm so every future write-up + the weekly Vault reach you free.</p>
+    <a href="${confirmUrl}" style="display:inline-block;background:#C8862B;color:#14110F;font-weight:700;text-decoration:none;padding:12px 24px;border-radius:100px">Confirm & unlock The Vault</a>`);
 }
