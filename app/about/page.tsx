@@ -24,7 +24,7 @@ export default async function AboutPage() {
     getPromo(),
     supabase
       .from("articles")
-      .select("id, title, slug, excerpt, cover_image, category, published_at")
+      .select("id, title, slug, excerpt, cover_image, video_url, category, published_at")
       .eq("status", "published")
       .order("published_at", { ascending: false })
       .limit(3),

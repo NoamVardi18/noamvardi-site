@@ -58,8 +58,40 @@ export default async function ArticlePage({
   const unlocked = !!user || c.get(SD_ACCESS_COOKIE)?.value === "1";
 
   const paras = String(a.body || "").split(/\n{2,}/);
+  // A block is a table if every line is a | row. First row = header,
+  // an optional |---|---| separator row is skipped.
+  const isTableBlock = (block: string) => {
+    const lines = block.split("\n").filter((l) => l.trim());
+    return lines.length >= 2 && lines.every((l) => l.trim().startsWith("|"));
+  };
+  const splitRow = (row: string) =>
+    row.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim());
+  const renderTable = (block: string, i: number) => {
+    const rows = block.split("\n").filter((l) => l.trim());
+    const head = splitRow(rows[0]);
+    const bodyRows = rows
+      .slice(1)
+      .filter((r) => !/^[\s|:-]+$/.test(r)) // drop a |---|---| separator row
+      .map(splitRow);
+    return (
+      <div className="article-table-wrap" key={i}>
+        <table className="article-table">
+          <thead>
+            <tr>{head.map((h, k) => <th key={k}>{h}</th>)}</tr>
+          </thead>
+          <tbody>
+            {bodyRows.map((r, k) => (
+              <tr key={k}>{r.map((c, m) => <td key={m}>{c}</td>)}</tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
   const renderPara = (para: string, i: number) =>
-    para.startsWith("## ") ? (
+    isTableBlock(para) ? (
+      renderTable(para, i)
+    ) : para.startsWith("## ") ? (
       <h2 key={i}>{para.slice(3)}</h2>
     ) : (
       <p key={i}>
@@ -87,6 +119,14 @@ export default async function ArticlePage({
         </div>
         <h1>{a.title}</h1>
         <div className="meta">{date}</div>
+        {a.video_url && (
+          <a className="watch-btn" href={a.video_url} target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+            Watch the video
+          </a>
+        )}
         {a.cover_image && (
           // eslint-disable-next-line @next/next/no-img-element
           <img className="cover" src={a.cover_image} alt={a.title} />

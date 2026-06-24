@@ -9,6 +9,7 @@ type Article = {
   body: string | null;
   status: string;
   cover_image: string | null;
+  video_url: string | null;
 };
 
 export function ArticleEditor({ article }: { article?: Article }) {
@@ -50,6 +51,11 @@ export function ArticleEditor({ article }: { article?: Article }) {
           placeholder={"Write the article here.\n\nA blank line = a new paragraph.\nA line starting with ## becomes a subheading."}
         />
         <span className="form-note">Tip: a blank line starts a paragraph. A line with &quot;## &quot; becomes a heading.</span>
+      </div>
+
+      <div className="lfg">
+        <label htmlFor="video_url">Video URL (YouTube/Reel — shows a ▶ badge + Watch button)</label>
+        <input id="video_url" name="video_url" type="url" defaultValue={article?.video_url ?? ""} placeholder="https://youtube.com/shorts/..." />
       </div>
 
       <div className="lfg">

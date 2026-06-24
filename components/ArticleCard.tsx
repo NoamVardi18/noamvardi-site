@@ -7,6 +7,7 @@ export type Article = {
   slug: string;
   excerpt: string | null;
   cover_image: string | null;
+  video_url: string | null;
   category: string;
   published_at: string | null;
 };
@@ -29,6 +30,13 @@ export function ArticleCard({ a }: { a: Article }) {
               <path d="M32 3 L43 34 L54 3" stroke="rgba(200,169,106,0.45)" strokeWidth="3.4" />
             </svg>
           </div>
+        )}
+        {a.video_url && (
+          <span className="acard-play">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </span>
         )}
       </div>
       <div className="acard-body">

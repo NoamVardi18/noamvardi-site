@@ -43,6 +43,7 @@ export async function createArticleAction(formData: FormData) {
   const excerpt = String(formData.get("excerpt") || "").trim();
   const body = String(formData.get("body") || "");
   const status = String(formData.get("status") || "draft");
+  const videoUrl = String(formData.get("video_url") || "").trim();
   if (!title) throw new Error("Title is required");
 
   const cover = await uploadCover(formData.get("cover") as File | null);
@@ -54,6 +55,7 @@ export async function createArticleAction(formData: FormData) {
     body,
     status,
     cover_image: cover,
+    video_url: videoUrl || null,
     published_at: status === "published" ? new Date().toISOString() : null,
   });
   if (error) throw new Error(error.message);
@@ -73,6 +75,7 @@ export async function updateArticleAction(formData: FormData) {
   const excerpt = String(formData.get("excerpt") || "").trim();
   const body = String(formData.get("body") || "");
   const status = String(formData.get("status") || "draft");
+  const videoUrl = String(formData.get("video_url") || "").trim();
 
   const patch: Record<string, unknown> = {
     title,
@@ -80,6 +83,7 @@ export async function updateArticleAction(formData: FormData) {
     excerpt: excerpt || null,
     body,
     status,
+    video_url: videoUrl || null,
   };
   const cover = await uploadCover(formData.get("cover") as File | null);
   if (cover) patch.cover_image = cover;

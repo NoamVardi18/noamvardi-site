@@ -19,7 +19,7 @@ const VALID_CATEGORIES = ["ai_tech", "web_design", "finance"];
 
 // POST /api/automation/articles
 // Headers: x-automation-secret: <AUTOMATION_SECRET>
-// Body: { title, body, category?, excerpt?, cover_image?, status? }
+// Body: { title, body, category?, excerpt?, cover_image?, video_url?, status? }
 export async function POST(req: Request) {
   const secret = req.headers.get("x-automation-secret");
   if (!process.env.AUTOMATION_SECRET || secret !== process.env.AUTOMATION_SECRET) {
@@ -56,8 +56,10 @@ export async function POST(req: Request) {
       category,
       excerpt: payload.excerpt ? String(payload.excerpt) : null,
       cover_image: payload.cover_image ? String(payload.cover_image) : null,
+      video_url: payload.video_url ? String(payload.video_url) : null,
       status,
       source: "automation",
+      brand: "sharpendaily",
       published_at: status === "published" ? new Date().toISOString() : null,
     })
     .select("id, slug")
