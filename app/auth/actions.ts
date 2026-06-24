@@ -13,14 +13,14 @@ export async function signInAction(
 ): Promise<Result> {
   const email = String(formData.get("email") || "").trim();
   const password = String(formData.get("password") || "");
-  if (!email || !password) return { error: "נא למלא אימייל וסיסמה" };
+  if (!email || !password) return { error: "Please enter email and password" };
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
     if (error.message.toLowerCase().includes("invalid"))
-      return { error: "אימייל או סיסמה שגויים" };
-    return { error: "שגיאה בהתחברות. נסה שוב." };
+      return { error: "Incorrect email or password" };
+    return { error: "Sign-in failed. Please try again." };
   }
   revalidatePath("/", "layout");
   return { ok: true };
@@ -37,11 +37,11 @@ export async function signUpAction(
   const marketing = formData.get("marketing_opt_in") === "on";
 
   if (!fullName || !email || !password)
-    return { error: "נא למלא את כל השדות" };
+    return { error: "Please fill in all fields" };
   if (password.length < 8)
-    return { error: "הסיסמה חייבת להכיל לפחות 8 תווים" };
+    return { error: "Password must be at least 8 characters" };
   if (!agreedTerms)
-    return { error: "יש לאשר את תנאי השימוש כדי להירשם" };
+    return { error: "You must accept the Terms to sign up" };
 
   const meta = {
     full_name: fullName,
@@ -62,8 +62,8 @@ export async function signUpAction(
     });
     if (createErr) {
       if (createErr.message.toLowerCase().includes("already"))
-        return { error: "כתובת המייל כבר רשומה. נסה להתחבר." };
-      return { error: "שגיאה בהרשמה. נסה שוב." };
+        return { error: "This email is already registered. Try signing in." };
+      return { error: "Sign-up failed. Please try again." };
     }
     const supabase = await createClient();
     await supabase.auth.signInWithPassword({ email, password });
@@ -81,8 +81,8 @@ export async function signUpAction(
   });
   if (error) {
     if (error.message.toLowerCase().includes("registered") || error.message.toLowerCase().includes("already"))
-      return { error: "כתובת המייל כבר רשומה. נסה להתחבר." };
-    return { error: "שגיאה בהרשמה. נסה שוב." };
+      return { error: "This email is already registered. Try signing in." };
+    return { error: "Sign-up failed. Please try again." };
   }
   revalidatePath("/", "layout");
   return { ok: true };

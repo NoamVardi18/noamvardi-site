@@ -22,12 +22,12 @@ export function ArticleEditor({ article }: { article?: Article }) {
       {isEdit && <input type="hidden" name="id" value={article!.id} />}
 
       <div className="lfg">
-        <label htmlFor="title">כותרת *</label>
+        <label htmlFor="title">Title *</label>
         <input id="title" name="title" defaultValue={article?.title} required />
       </div>
 
       <div className="lfg">
-        <label htmlFor="category">קטגוריה</label>
+        <label htmlFor="category">Category</label>
         <select id="category" name="category" defaultValue={article?.category ?? "ai_tech"}>
           {ARTICLE_CATEGORIES.map((c) => (
             <option key={c.value} value={c.value}>{c.label}</option>
@@ -36,24 +36,24 @@ export function ArticleEditor({ article }: { article?: Article }) {
       </div>
 
       <div className="lfg">
-        <label htmlFor="excerpt">תקציר (יוצג בכרטיס)</label>
+        <label htmlFor="excerpt">Excerpt (shown on the card)</label>
         <input id="excerpt" name="excerpt" defaultValue={article?.excerpt ?? ""} />
       </div>
 
       <div className="lfg">
-        <label htmlFor="body">תוכן המאמר</label>
+        <label htmlFor="body">Article body</label>
         <textarea
           id="body"
           name="body"
           defaultValue={article?.body ?? ""}
           rows={16}
-          placeholder={"כתוב כאן את המאמר.\n\nשורה ריקה = פסקה חדשה.\nשורה שמתחילה ב-## תהפוך לכותרת משנה."}
+          placeholder={"Write the article here.\n\nA blank line = a new paragraph.\nA line starting with ## becomes a subheading."}
         />
-        <span className="form-note">טיפ: שורה ריקה פותחת פסקה. שורה עם &quot;## &quot; הופכת לכותרת.</span>
+        <span className="form-note">Tip: a blank line starts a paragraph. A line with &quot;## &quot; becomes a heading.</span>
       </div>
 
       <div className="lfg">
-        <label htmlFor="cover">תמונת כותרת {isEdit && "(השאר ריק כדי לא לשנות)"}</label>
+        <label htmlFor="cover">Cover image {isEdit && "(leave empty to keep current)"}</label>
         <input id="cover" name="cover" type="file" accept="image/*" />
         {article?.cover_image && (
           // eslint-disable-next-line @next/next/no-img-element
@@ -62,15 +62,15 @@ export function ArticleEditor({ article }: { article?: Article }) {
       </div>
 
       <div className="lfg">
-        <label htmlFor="status">סטטוס</label>
+        <label htmlFor="status">Status</label>
         <select id="status" name="status" defaultValue={article?.status ?? "draft"}>
-          <option value="draft">טיוטה</option>
-          <option value="published">מפורסם</option>
+          <option value="draft">Draft</option>
+          <option value="published">Published</option>
         </select>
       </div>
 
       <button className="btn-blk" type="submit">
-        {isEdit ? "שמירת שינויים" : "יצירת מאמר"}
+        {isEdit ? "Save changes" : "Create article"}
       </button>
     </form>
   );

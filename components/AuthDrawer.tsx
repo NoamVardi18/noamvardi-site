@@ -4,6 +4,7 @@ import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signInAction, signUpAction, signInWithGoogleAction } from "@/app/auth/actions";
+import { SDMark } from "./sharpen/SDMark";
 
 function GoogleIcon() {
   return (
@@ -59,94 +60,95 @@ export function AuthDrawer({
         className={`drawer ${open ? "open" : ""}`}
         role="dialog"
         aria-modal="true"
-        aria-label={mode === "login" ? "התחברות" : "הרשמה"}
+        aria-label={mode === "login" ? "Sign in" : "Sign up"}
         aria-hidden={!open}
       >
-        <button className="drawer-close" onClick={onClose} aria-label="סגור">
+        <button className="drawer-close" onClick={onClose} aria-label="Close">
           ✕
         </button>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo/logo-dark-bg.jpg" alt="" aria-hidden="true" className="drawer-logo" style={{ alignSelf: "flex-start" }} />
+        <div className="drawer-logo" style={{ alignSelf: "flex-start" }}>
+          <SDMark size={40} />
+        </div>
 
         {mode === "login" ? (
           <>
-            <h2>ברוך שובך</h2>
+            <h2>Welcome back</h2>
             <p className="form-note" style={{ marginBottom: 24 }}>
-              התחבר כדי לגשת למרכז הנכסים שלך
+              Sign in to access your portfolio
             </p>
             <form action={signInWithGoogleAction}>
               <button className="btn-google" type="submit">
                 <GoogleIcon />
-                המשך עם Google
+                Continue with Google
               </button>
             </form>
-            <div className="auth-divider">או</div>
+            <div className="auth-divider">or</div>
             <form action={loginSubmit} className="lform">
               <div className="lfg">
-                <label htmlFor="li-email">אימייל</label>
+                <label htmlFor="li-email">Email</label>
                 <input id="li-email" name="email" type="email" autoComplete="email" required dir="ltr" />
               </div>
               <div className="lfg">
-                <label htmlFor="li-pass">סיסמה</label>
+                <label htmlFor="li-pass">Password</label>
                 <input id="li-pass" name="password" type="password" autoComplete="current-password" required dir="ltr" />
               </div>
               {loginState.error && <div className="form-error">{loginState.error}</div>}
               <button className="btn-blk" type="submit" disabled={loginPending}>
-                {loginPending ? "מתחבר..." : "התחברות"}
+                {loginPending ? "Signing in…" : "Sign in"}
               </button>
             </form>
             <p className="switch">
-              אין לך חשבון עדיין?{" "}
-              <button onClick={() => setMode("register")}>הרשמה</button>
+              Don&apos;t have an account yet?{" "}
+              <button onClick={() => setMode("register")}>Sign up</button>
             </p>
           </>
         ) : (
           <>
-            <h2>יצירת חשבון</h2>
+            <h2>Create account</h2>
             <p className="form-note" style={{ marginBottom: 24 }}>
-              הצטרף וקבל גישה למרכז הנכסים האישי
+              Join and get access to your personal portfolio
             </p>
             <form action={signInWithGoogleAction}>
               <button className="btn-google" type="submit">
                 <GoogleIcon />
-                המשך עם Google
+                Continue with Google
               </button>
             </form>
-            <div className="auth-divider">או</div>
+            <div className="auth-divider">or</div>
             <form action={regSubmit} className="lform">
               <div className="lfg">
-                <label htmlFor="re-name">שם מלא</label>
+                <label htmlFor="re-name">Full name</label>
                 <input id="re-name" name="full_name" type="text" autoComplete="name" required />
               </div>
               <div className="lfg">
-                <label htmlFor="re-email">אימייל</label>
+                <label htmlFor="re-email">Email</label>
                 <input id="re-email" name="email" type="email" autoComplete="email" required dir="ltr" />
               </div>
               <div className="lfg">
-                <label htmlFor="re-pass">סיסמה (8 תווים לפחות)</label>
+                <label htmlFor="re-pass">Password (8+ characters)</label>
                 <input id="re-pass" name="password" type="password" autoComplete="new-password" minLength={8} required dir="ltr" />
               </div>
               <label className="checkbox-row">
                 <input type="checkbox" name="agreed_terms" required />
                 <span>
-                  קראתי ואני מאשר/ת את{" "}
+                  I have read and accept the{" "}
                   <Link href="/terms" target="_blank" style={{ textDecoration: "underline" }}>
-                    תנאי השימוש ומדיניות הפרטיות
+                    Terms &amp; Privacy Policy
                   </Link>
                 </span>
               </label>
               <label className="checkbox-row">
                 <input type="checkbox" name="marketing_opt_in" />
-                <span>אני מעוניין/ת לקבל עדכונים ודיוור (אופציונלי)</span>
+                <span>I&apos;d like to receive updates (optional)</span>
               </label>
               {regState.error && <div className="form-error">{regState.error}</div>}
               <button className="btn-blk" type="submit" disabled={regPending}>
-                {regPending ? "נרשם..." : "יצירת חשבון"}
+                {regPending ? "Creating…" : "Create account"}
               </button>
             </form>
             <p className="switch">
-              כבר יש לך חשבון?{" "}
-              <button onClick={() => setMode("login")}>התחברות</button>
+              Already have an account?{" "}
+              <button onClick={() => setMode("login")}>Sign in</button>
             </p>
           </>
         )}

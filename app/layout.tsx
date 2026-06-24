@@ -1,21 +1,23 @@
 import type { Metadata } from "next";
-import { Heebo, Frank_Ruhl_Libre, Instrument_Serif } from "next/font/google";
+import { Space_Grotesk, Inter, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 
-const heebo = Heebo({
-  subsets: ["hebrew", "latin"],
-  weight: ["300", "400", "500", "700", "800", "900"],
-  variable: "--font-heebo",
+// SharpenDaily — English LTR brand: bold geometric display + clean body.
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-sd-display",
   display: "swap",
 });
 
-const frank = Frank_Ruhl_Libre({
-  subsets: ["hebrew", "latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-frank",
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sd-body",
   display: "swap",
 });
 
+// Latin serif italic — section eyebrows + one accent word in a headline.
 const instrument = Instrument_Serif({
   subsets: ["latin"],
   weight: "400",
@@ -25,11 +27,11 @@ const instrument = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "נועם ורדי | סוכני AI לעסקים — AI · Innovation · Future",
+  title: "SharpenDaily — get genuinely better, daily",
   description:
-    "נועם ורדי — בניית סוכני בינה מלאכותית ואוטומציות שמבצעים עבודה אמיתית בעסק: שירות לקוחות 24/7, תיאום פגישות, מעקב לידים ואוטומציית תפעול.",
+    "The full how-to behind every SharpenDaily video. Real steps, the exact prompts and tools, a short weekly newsletter. Free.",
   icons: {
-    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23070a0f'/%3E%3Cpath d='M14 45 L14 18 L28 45 L28 18' stroke='%23f2efe9' stroke-width='3.2' fill='none'/%3E%3Cpath d='M36 18 L45 45 L54 18' stroke='%23c8a96a' stroke-width='3.2' fill='none'/%3E%3C/svg%3E",
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2314110F'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='sans-serif' font-weight='800' font-size='28' fill='%23C8862B'%3ESD%3C/text%3E%3C/svg%3E",
   },
 };
 
@@ -40,9 +42,9 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="he"
-      dir="rtl"
-      className={`${heebo.variable} ${frank.variable} ${instrument.variable}`}
+      lang="en"
+      dir="ltr"
+      className={`${spaceGrotesk.variable} ${inter.variable} ${instrument.variable} theme-sharpen`}
     >
       <body>
         <div className="atmosphere" aria-hidden="true" />

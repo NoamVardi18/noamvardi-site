@@ -6,7 +6,7 @@ import { getSessionUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { setLeadStatusAction, deleteLeadAction } from "./actions";
 
-export const metadata = { title: "לידים | ניהול" };
+export const metadata = { title: "Leads | Admin" };
 
 type Lead = {
   id: string;
@@ -36,15 +36,15 @@ export default async function AdminLeadsPage() {
       <SiteHeader user={user} />
       <main className="page">
         <span className="kicker">INBOX</span>
-        <h1>לידים</h1>
+        <h1>Leads</h1>
         <p className="sub">
-          {leads.length} פניות מהאתר{newCount > 0 ? ` · ${newCount} חדשות` : ""}
+          {leads.length} inquiries from the site{newCount > 0 ? ` · ${newCount} new` : ""}
         </p>
         <AdminNav active="/admin/leads" />
 
         {leads.length === 0 ? (
           <div className="card" style={{ textAlign: "center", padding: 48 }}>
-            <p className="muted" style={{ margin: 0 }}>אין פניות עדיין — כשמישהו ישלח את הטופס בדף הבית, זה יופיע כאן.</p>
+            <p className="muted" style={{ margin: 0 }}>No inquiries yet — when someone submits the homepage form, it shows up here.</p>
           </div>
         ) : (
           leads.map((l) => (
@@ -55,16 +55,16 @@ export default async function AdminLeadsPage() {
                     <strong style={{ fontSize: 16 }}>{l.name}</strong>
                     {l.company && <span className="muted" style={{ fontSize: 13 }}>· {l.company}</span>}
                     <span className={`pill ${l.status === "new" ? "gold" : ""}`}>
-                      {l.status === "new" ? "חדש" : "טופל"}
+                      {l.status === "new" ? "New" : "Handled"}
                     </span>
                   </div>
-                  <div className="muted" style={{ fontSize: 13.5, direction: "ltr", textAlign: "right" }}>
+                  <div className="muted" style={{ fontSize: 13.5, direction: "ltr" }}>
                     <a href={`mailto:${l.email}`} style={{ textDecoration: "none" }}>{l.email}</a>
                     {l.phone && <> · <a href={`tel:${l.phone}`} style={{ textDecoration: "none" }}>{l.phone}</a></>}
                   </div>
                 </div>
                 <span className="muted" style={{ fontSize: 12.5 }}>
-                  {new Date(l.created_at).toLocaleString("he-IL", { dateStyle: "medium", timeStyle: "short" })}
+                  {new Date(l.created_at).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" })}
                 </span>
               </div>
               <p style={{ margin: "14px 0 16px", fontSize: 15, lineHeight: 1.8, color: "var(--text-dim)", whiteSpace: "pre-wrap" }}>
@@ -75,12 +75,12 @@ export default async function AdminLeadsPage() {
                   <input type="hidden" name="id" value={l.id} />
                   <input type="hidden" name="status" value={l.status === "new" ? "handled" : "new"} />
                   <button className="icon-btn" type="submit">
-                    {l.status === "new" ? "סמן כטופל ✓" : "החזר לחדש"}
+                    {l.status === "new" ? "Mark handled ✓" : "Back to new"}
                   </button>
                 </form>
                 <form action={deleteLeadAction}>
                   <input type="hidden" name="id" value={l.id} />
-                  <button className="icon-btn danger" type="submit">מחק</button>
+                  <button className="icon-btn danger" type="submit">Delete</button>
                 </form>
               </div>
             </div>

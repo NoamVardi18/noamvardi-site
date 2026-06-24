@@ -17,9 +17,9 @@ export async function submitContactAction(
   const company = String(formData.get("company") || "").trim();
   const message = String(formData.get("message") || "").trim();
 
-  if (!name || !email || !message) return { error: "נא למלא שם, אימייל והודעה" };
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: "כתובת אימייל לא תקינה" };
-  if (message.length > 4000) return { error: "ההודעה ארוכה מדי" };
+  if (!name || !email || !message) return { error: "Please fill in name, email and a message" };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: "Invalid email address" };
+  if (message.length > 4000) return { error: "Message is too long" };
 
   const supabase = await createClient();
   const { error } = await supabase.from("contact_messages").insert({
@@ -29,6 +29,6 @@ export async function submitContactAction(
     company: company.slice(0, 200) || null,
     message,
   });
-  if (error) return { error: "שגיאה בשליחה. נסו שוב או כתבו לי בוואטסאפ." };
+  if (error) return { error: "Something went wrong. Try again or message me on WhatsApp." };
   return { ok: true };
 }

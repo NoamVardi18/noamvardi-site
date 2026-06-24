@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 
 async function uid() {
   const user = await getSessionUser();
-  if (!user) throw new Error("לא מחובר");
+  if (!user) throw new Error("Not signed in");
   const supabase = await createClient();
   const { data } = await supabase.auth.getUser();
   return { supabase, userId: data.user!.id };
@@ -16,7 +16,7 @@ export async function addAccount(formData: FormData) {
   const { supabase, userId } = await uid();
   const name = String(formData.get("name") || "").trim();
   const type = String(formData.get("type") || "broker");
-  if (!name) throw new Error("חסר שם");
+  if (!name) throw new Error("Name is required");
   await supabase.from("accounts").insert({ user_id: userId, name, type });
   revalidatePath("/hub");
 }
@@ -60,7 +60,7 @@ export async function addHolding(formData: FormData) {
     currency,
   };
   if (assetType === "manual") {
-    row.name = name || "נכס ידני";
+    row.name = name || "Manual asset";
     row.manual_value = manualValue;
     row.quantity = 0;
   } else if (assetType === "cash") {

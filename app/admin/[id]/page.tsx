@@ -6,7 +6,7 @@ import { ArticleEditor } from "@/components/ArticleEditor";
 import { getSessionUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata = { title: "עריכת מאמר | ניהול" };
+export const metadata = { title: "Edit article | Admin" };
 
 export default async function EditArticlePage({
   params,
@@ -31,9 +31,9 @@ export default async function EditArticlePage({
       <SiteHeader user={user} />
       <main className="page page-narrow">
         <Link href="/admin" className="acard-more" style={{ display: "inline-block", marginBottom: 18 }}>
-          → חזרה לניהול
+          ← Back to admin
         </Link>
-        <h1>עריכת מאמר</h1>
+        <h1>Edit article</h1>
         <div className="card">
           <ArticleEditor article={article} />
         </div>

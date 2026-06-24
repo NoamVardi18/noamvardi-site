@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getFxMatrix, getQuotes, holdingNativeValue, convert } from "@/lib/prices";
 import { saveSnapshot } from "./actions";
 
-export const metadata = { title: "מרכז הנכסים | נועם ורדי" };
+export const metadata = { title: "Asset hub | SharpenDaily" };
 export const dynamic = "force-dynamic";
 
 type Holding = {

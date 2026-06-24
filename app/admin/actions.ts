@@ -9,7 +9,7 @@ function slugify(s: string) {
   const base = s
     .trim()
     .toLowerCase()
-    .replace(/[^֐-׿a-z0-9\s-]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
     .replace(/\s+/g, "-")
     .slice(0, 60);
   return `${base || "article"}-${Math.random().toString(36).slice(2, 7)}`;
@@ -17,7 +17,7 @@ function slugify(s: string) {
 
 async function requireAdmin() {
   const user = await getSessionUser();
-  if (!user?.isAdmin) throw new Error("גישה נדחתה");
+  if (!user?.isAdmin) throw new Error("Access denied");
   return user;
 }
 
@@ -29,7 +29,7 @@ async function uploadCover(file: File | null): Promise<string | null> {
   const { error } = await supabase.storage
     .from("article-images")
     .upload(path, file, { contentType: file.type, upsert: false });
-  if (error) throw new Error("שגיאה בהעלאת התמונה");
+  if (error) throw new Error("Image upload failed");
   const { data } = supabase.storage.from("article-images").getPublicUrl(path);
   return data.publicUrl;
 }
@@ -43,7 +43,7 @@ export async function createArticleAction(formData: FormData) {
   const excerpt = String(formData.get("excerpt") || "").trim();
   const body = String(formData.get("body") || "");
   const status = String(formData.get("status") || "draft");
-  if (!title) throw new Error("חסרה כותרת");
+  if (!title) throw new Error("Title is required");
 
   const cover = await uploadCover(formData.get("cover") as File | null);
   const { error } = await supabase.from("articles").insert({

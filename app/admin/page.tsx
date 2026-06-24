@@ -8,7 +8,7 @@ import { getSessionUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { deleteArticleAction } from "./actions";
 
-export const metadata = { title: "ניהול | נועם ורדי" };
+export const metadata = { title: "Admin | SharpenDaily" };
 
 export default async function AdminPage() {
   const user = await getSessionUser();
@@ -35,36 +35,36 @@ export default async function AdminPage() {
       <SiteHeader user={user} />
       <main className="page">
         <span className="kicker">CONTROL ROOM</span>
-        <h1>ניהול</h1>
-        <p className="sub">מאמרים, פרומו, לידים ומשתמשים — הכל ממקום אחד.</p>
+        <h1>Admin</h1>
+        <p className="sub">Articles, promo, leads and users — all in one place.</p>
 
         <AdminNav active="/admin" />
 
         <div className="admin-tiles">
-          <div className="admin-tile"><div className="v">{articles.length}</div><div className="t">מאמרים</div></div>
-          <div className="admin-tile"><div className="v">{published}</div><div className="t">מפורסמים</div></div>
-          <div className="admin-tile"><div className="v">{usersCount ?? 0}</div><div className="t">משתמשים רשומים</div></div>
-          <div className="admin-tile"><div className="v">{newLeads ?? 0}</div><div className="t">לידים חדשים</div></div>
+          <div className="admin-tile"><div className="v">{articles.length}</div><div className="t">Articles</div></div>
+          <div className="admin-tile"><div className="v">{published}</div><div className="t">Published</div></div>
+          <div className="admin-tile"><div className="v">{usersCount ?? 0}</div><div className="t">Registered users</div></div>
+          <div className="admin-tile"><div className="v">{newLeads ?? 0}</div><div className="t">New leads</div></div>
         </div>
 
         <div className="admin-head">
-          <h3 style={{ margin: 0, fontSize: 18 }}>כל המאמרים</h3>
-          <Link href="/admin/new" className="btn-blk">+ מאמר חדש</Link>
+          <h3 style={{ margin: 0, fontSize: 18 }}>All articles</h3>
+          <Link href="/admin/new" className="btn-blk">+ New article</Link>
         </div>
 
         <div className="card" style={{ padding: 0, overflowX: "auto" }}>
           <table className="tbl">
             <thead>
               <tr>
-                <th>כותרת</th>
-                <th>קטגוריה</th>
-                <th>סטטוס</th>
-                <th>פעולות</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {articles.length === 0 ? (
-                <tr><td colSpan={4} className="muted" style={{ padding: 24 }}>אין מאמרים עדיין</td></tr>
+                <tr><td colSpan={4} className="muted" style={{ padding: 24 }}>No articles yet</td></tr>
               ) : (
                 articles.map((a) => (
                   <tr key={a.id}>
@@ -72,16 +72,16 @@ export default async function AdminPage() {
                     <td><span className="pill">{categoryLabel(a.category)}</span></td>
                     <td>
                       <span className={`pill ${a.status === "published" ? "green" : ""}`}>
-                        {a.status === "published" ? "מפורסם" : "טיוטה"}
+                        {a.status === "published" ? "Published" : "Draft"}
                       </span>
                     </td>
                     <td>
                       <div className="row-actions">
-                        <Link href={`/admin/${a.id}`} className="icon-btn">ערוך</Link>
-                        <Link href={`/articles/${a.slug}`} className="icon-btn" target="_blank">צפה</Link>
+                        <Link href={`/admin/${a.id}`} className="icon-btn">Edit</Link>
+                        <Link href={`/articles/${a.slug}`} className="icon-btn" target="_blank">View</Link>
                         <form action={deleteArticleAction}>
                           <input type="hidden" name="id" value={a.id} />
-                          <button className="icon-btn danger" type="submit">מחק</button>
+                          <button className="icon-btn danger" type="submit">Delete</button>
                         </form>
                       </div>
                     </td>
@@ -93,9 +93,9 @@ export default async function AdminPage() {
         </div>
 
         <div className="card" style={{ marginTop: 24 }}>
-          <h3 style={{ marginTop: 0 }}>אוטומציה שבועית</h3>
+          <h3 style={{ marginTop: 0 }}>Weekly automation</h3>
           <p className="muted" style={{ fontSize: 14, lineHeight: 1.8, margin: 0 }}>
-            מאמר על טרנדים בסוכני AI ואוטומציה מתפרסם אוטומטית פעם בשבוע דרך{" "}
+            A how-to is published automatically once a week via{" "}
             <code>POST /api/automation/articles</code> (GitHub Action + Gemini).
           </p>
         </div>

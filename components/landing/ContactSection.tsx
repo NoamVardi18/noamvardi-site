@@ -10,20 +10,20 @@ export function ContactSection() {
   const [state, submit, pending] = useActionState(submitContactAction, {});
 
   return (
-    <section className="section" id="contact" aria-label="צור קשר">
+    <section className="section" id="contact" aria-label="Contact">
       <div className="section-inner">
         <div className="section-head center fade-up">
           <span className="kicker">LET&apos;S TALK</span>
           <h2>
-            בואו נמצא מה אפשר <span className="serif-accent">להפוך לאוטומטי.</span>
+            Let&apos;s find what you can <span className="serif-accent">make automatic.</span>
           </h2>
-          <p>שיחה קצרה אחת מספיקה כדי לזהות את הסוכן הראשון שהעסק שלכם צריך.</p>
+          <p>One short conversation is enough to spot the first agent your business needs.</p>
         </div>
 
         <div className="contact-layout">
           <div className="contact-cards fade-up">
             <a
-              href={`https://wa.me/${BRAND.phoneIntl}?text=${encodeURIComponent("היי נועם, אשמח לשמוע על סוכני AI לעסק שלי")}`}
+              href={`https://wa.me/${BRAND.phoneIntl}?text=${encodeURIComponent("Hi Noam, I'd love to hear about AI agents for my business")}`}
               target="_blank"
               rel="noopener noreferrer"
               className="citem wa"
@@ -31,28 +31,28 @@ export function ContactSection() {
               <span className="ic" aria-hidden="true">💬</span>
               <span className="citem-txt">
                 <span className="main">WhatsApp</span>
-                <span className="detail">הדרך המהירה ביותר — מענה אישי</span>
+                <span className="detail">The fastest way — a personal reply</span>
               </span>
             </a>
             <a href={`tel:${BRAND.phone}`} className="citem">
               <span className="ic" aria-hidden="true">📞</span>
               <span className="citem-txt">
                 <span className="main">052-836-9212</span>
-                <span className="detail">זמין א׳–ו׳ 9:00–20:00</span>
+                <span className="detail">Available Sun–Fri 9:00–20:00</span>
               </span>
             </a>
             <a href={`mailto:${BRAND.email}`} className="citem">
               <span className="ic" aria-hidden="true">✉️</span>
               <span className="citem-txt">
                 <span className="main">{BRAND.email}</span>
-                <span className="detail">מענה תוך 24 שעות</span>
+                <span className="detail">Reply within 24 hours</span>
               </span>
             </a>
             {CALENDLY_URL && (
               <div className="calendly-slot">
                 <iframe
-                  src={`${CALENDLY_URL}?hide_gdpr_banner=1&background_color=0d1219&text_color=f2efe9&primary_color=c8a96a`}
-                  title="קביעת שיחת היכרות"
+                  src={`${CALENDLY_URL}?hide_gdpr_banner=1&background_color=14110F&text_color=F4F1EA&primary_color=C8862B`}
+                  title="Book an intro call"
                   loading="lazy"
                 />
               </div>
@@ -63,11 +63,11 @@ export function ContactSection() {
             {state.ok ? (
               <div className="form-success">
                 <div className="ck" aria-hidden="true">✓</div>
-                <h3>ההודעה התקבלה!</h3>
-                <p>אחזור אליכם בהקדם — בדרך כלל באותו היום.</p>
+                <h3>Message received!</h3>
+                <p>I&apos;ll get back to you shortly — usually the same day.</p>
               </div>
             ) : (
-              <form action={submit} className="form" aria-label="טופס יצירת קשר">
+              <form action={submit} className="form" aria-label="Contact form">
                 {/* honeypot */}
                 <input
                   type="text" name="website" tabIndex={-1} autoComplete="off"
@@ -76,34 +76,34 @@ export function ContactSection() {
                 />
                 <div className="form-row">
                   <div className="fg">
-                    <label htmlFor="c-name">שם מלא *</label>
-                    <input id="c-name" name="name" type="text" placeholder="ישראל ישראלי" required autoComplete="name" />
+                    <label htmlFor="c-name">Full name *</label>
+                    <input id="c-name" name="name" type="text" placeholder="Jane Doe" required autoComplete="name" />
                   </div>
                   <div className="fg">
-                    <label htmlFor="c-phone">טלפון</label>
+                    <label htmlFor="c-phone">Phone</label>
                     <input id="c-phone" name="phone" type="tel" placeholder="05X-XXXXXXX" autoComplete="tel" dir="ltr" />
                   </div>
                 </div>
                 <div className="form-row">
                   <div className="fg">
-                    <label htmlFor="c-email">אימייל *</label>
+                    <label htmlFor="c-email">Email *</label>
                     <input id="c-email" name="email" type="email" placeholder="you@example.com" required autoComplete="email" dir="ltr" />
                   </div>
                   <div className="fg">
-                    <label htmlFor="c-company">שם העסק</label>
-                    <input id="c-company" name="company" type="text" placeholder="העסק שלי בע״מ" autoComplete="organization" />
+                    <label htmlFor="c-company">Business name</label>
+                    <input id="c-company" name="company" type="text" placeholder="My Business Ltd." autoComplete="organization" />
                   </div>
                 </div>
                 <div className="fg">
-                  <label htmlFor="c-msg">מה הייתם רוצים להפוך לאוטומטי? *</label>
+                  <label htmlFor="c-msg">What would you like to make automatic? *</label>
                   <textarea
                     id="c-msg" name="message" required
-                    placeholder="לדוגמה: אנחנו מפספסים פניות בוואטסאפ אחרי שעות הפעילות…"
+                    placeholder="e.g. we miss WhatsApp inquiries after hours…"
                   />
                 </div>
                 {state.error && <div className="form-error">{state.error}</div>}
                 <button type="submit" className="form-submit" disabled={pending}>
-                  {pending ? "שולח…" : "שלחו הודעה ←"}
+                  {pending ? "Sending…" : "Send message →"}
                 </button>
               </form>
             )}

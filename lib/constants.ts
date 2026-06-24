@@ -1,27 +1,27 @@
 export const BRAND = {
-  name: "NOAM VARDI",
-  tagline: "AI · INNOVATION · FUTURE",
-  email: "vardinoam3@gmail.com",
+  name: "SharpenDaily",
+  tagline: "GET GENUINELY BETTER — DAILY",
+  email: "hello@sharpendaily.co",
   phone: "0528369212",
   phoneIntl: "972528369212",
 };
 
 export const CURRENCIES = [
-  { code: "USD", symbol: "$", label: "דולר אמריקאי" },
-  { code: "ILS", symbol: "₪", label: "שקל" },
-  { code: "EUR", symbol: "€", label: "אירו" },
-  { code: "GBP", symbol: "£", label: "פאונד" },
+  { code: "USD", symbol: "$", label: "US Dollar" },
+  { code: "ILS", symbol: "₪", label: "Israeli Shekel" },
+  { code: "EUR", symbol: "€", label: "Euro" },
+  { code: "GBP", symbol: "£", label: "British Pound" },
 ] as const;
 
 export type CurrencyCode = (typeof CURRENCIES)[number]["code"];
 
 export const ASSET_TYPES = [
-  { value: "stock_us", label: "מניה אמריקאית" },
-  { value: "stock_il", label: "מניה ישראלית (TASE)" },
-  { value: "etf", label: "קרן סל / ETF" },
-  { value: "crypto", label: "קריפטו / מטבע דיגיטלי" },
-  { value: "cash", label: "מזומן / מטבע" },
-  { value: "manual", label: "ערך ידני (קופ\"ג / קרן השתלמות)" },
+  { value: "stock_us", label: "US Stock" },
+  { value: "stock_il", label: "Israeli Stock (TASE)" },
+  { value: "etf", label: "ETF" },
+  { value: "crypto", label: "Crypto" },
+  { value: "cash", label: "Cash / Currency" },
+  { value: "manual", label: "Manual value (fund / pension)" },
 ] as const;
 
 // CoinGecko IDs for popular coins (symbol → coingecko-id)
@@ -46,35 +46,35 @@ export const CRYPTO_COINS: { symbol: string; name: string; id: string }[] = [
 ];
 
 export const ACCOUNT_TYPES = [
-  { value: "broker", label: "בית השקעות" },
-  { value: "bank", label: "בנק" },
-  { value: "cold_wallet", label: "ארנק קר" },
-  { value: "fund", label: "קרן / גמל" },
-  { value: "pension", label: "פנסיה / השתלמות" },
-  { value: "other", label: "אחר" },
+  { value: "broker", label: "Brokerage" },
+  { value: "bank", label: "Bank" },
+  { value: "cold_wallet", label: "Cold wallet" },
+  { value: "fund", label: "Fund" },
+  { value: "pension", label: "Pension" },
+  { value: "other", label: "Other" },
 ] as const;
 
 // Preset brokers/wallets (user can also add free-text).
 export const PRESET_ACCOUNTS = [
-  "בלומברג טרייד",
-  "מיטב טרייד",
+  "Bloomberg Trade",
+  "Meitav Trade",
   "IBI",
-  "אקסלנס",
-  "פסגות",
+  "Excellence",
+  "Psagot",
   "Interactive Brokers",
   "eToro",
   "Plus500",
-  "Ledger (ארנק קר)",
-  "Trezor (ארנק קר)",
+  "Ledger (cold wallet)",
+  "Trezor (cold wallet)",
   "Binance",
   "Coinbase",
-  "אלטשולר שחם",
-  "מור",
-  "הראל",
+  "Altshuler Shaham",
+  "More",
+  "Harel",
 ];
 
 export const ARTICLE_CATEGORIES = [
-  { value: "ai_tech", label: "AI וטכנולוגיה" },
-  { value: "web_design", label: "פיתוח ועיצוב אתרים" },
-  { value: "finance", label: "שוק ההון והשקעות" },
+  { value: "ai_tech", label: "AI & Tech" },
+  { value: "web_design", label: "Build & Design" },
+  { value: "finance", label: "Markets & Investing" },
 ] as const;

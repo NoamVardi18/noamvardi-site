@@ -4,17 +4,17 @@ import { ArticleCard, type Article } from "@/components/ArticleCard";
 export function ArticlesTeaser({ articles }: { articles: Article[] }) {
   if (articles.length === 0) return null;
   return (
-    <section className="section" id="insights" aria-label="מאמרים">
+    <section className="section" id="insights" aria-label="How-tos">
       <div className="section-inner">
         <div className="section-head fade-up" style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", justifyContent: "space-between", gap: 18, maxWidth: "none" }}>
           <div>
-            <span className="kicker">INSIGHTS</span>
+            <span className="kicker">HOW-TOS</span>
             <h2 style={{ margin: 0 }}>
-              מה חדש בעולם <span className="serif-accent">הסוכנים.</span>
+              The full how-to behind <span className="serif-accent">every video.</span>
             </h2>
           </div>
           <Link href="/articles" className="btn-glass" style={{ padding: "11px 24px" }}>
-            לכל המאמרים ←
+            All how-tos →
           </Link>
         </div>
         <div className="articles-grid">
