@@ -93,7 +93,7 @@ export default async function ArticlePage({
   const isNumberBlock = (b: string) => lines(b).every((l) => /^\d+[.)]\s+/.test(l.trim()));
   // bold the leading "Label:" in a list item so lists read as a scannable spec
   const renderItem = (text: string, key: number) => {
-    const m = text.match(/^([^:]{1,40}):\s+(.*)$/s);
+    const m = text.match(/^([^:]{1,40}):\s+(.*)$/);
     return m ? (
       <li key={key}><strong>{m[1]}:</strong> {m[2]}</li>
     ) : (
@@ -102,7 +102,19 @@ export default async function ArticlePage({
   };
   const renderPara = (para: string, i: number) => {
     if (isTableBlock(para)) return renderTable(para, i);
-    if (para.startsWith("## ")) return <h2 key={i}>{para.slice(3)}</h2>;
+    // peel a leading "## heading" line even if body text is glued to it with
+    // a single newline, so a whole section never renders as one big heading
+    if (para.startsWith("## ")) {
+      const nl = para.indexOf("\n");
+      const heading = (nl === -1 ? para : para.slice(0, nl)).slice(3).trim();
+      const rest = nl === -1 ? "" : para.slice(nl + 1).trim();
+      return (
+        <div key={i}>
+          <h2>{heading}</h2>
+          {rest && renderPara(rest, i * 1000 + 1)}
+        </div>
+      );
+    }
     if (lines(para).length >= 2 && isBulletBlock(para))
       return (
         <ul className="article-list" key={i}>
