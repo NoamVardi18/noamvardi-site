@@ -37,8 +37,8 @@ export function ContactSection() {
             <a href={`tel:${BRAND.phone}`} className="citem">
               <span className="ic" aria-hidden="true">📞</span>
               <span className="citem-txt">
-                <span className="main">052-836-9212</span>
-                <span className="detail">Available Sun–Fri 9:00–20:00</span>
+                <span className="main">🇮🇱 +972 52-836-9212</span>
+                <span className="detail">Available Sun–Fri 9:00–20:00 (IL)</span>
               </span>
             </a>
             <a href={`mailto:${BRAND.email}`} className="citem">
@@ -81,7 +81,7 @@ export function ContactSection() {
                   </div>
                   <div className="fg">
                     <label htmlFor="c-phone">Phone</label>
-                    <input id="c-phone" name="phone" type="tel" placeholder="05X-XXXXXXX" autoComplete="tel" dir="ltr" />
+                    <input id="c-phone" name="phone" type="tel" placeholder="+972 5X-XXX-XXXX" autoComplete="tel" dir="ltr" />
                   </div>
                 </div>
                 <div className="form-row">
