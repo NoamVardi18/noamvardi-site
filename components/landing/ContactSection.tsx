@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import { BRAND } from "@/lib/constants";
 import { submitContactAction } from "@/app/contact/actions";
 
-const CALENDLY_URL = process.env.NEXT_PUBLIC_CALENDLY_URL;
+const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL;
 
 export function ContactSection() {
   const [state, submit, pending] = useActionState(submitContactAction, {});
@@ -22,25 +22,6 @@ export function ContactSection() {
 
         <div className="contact-layout">
           <div className="contact-cards fade-up">
-            <a
-              href={`https://wa.me/${BRAND.phoneIntl}?text=${encodeURIComponent("Hi Noam, I'd love to hear about AI agents for my business")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="citem wa"
-            >
-              <span className="ic" aria-hidden="true">💬</span>
-              <span className="citem-txt">
-                <span className="main">WhatsApp</span>
-                <span className="detail">The fastest way — a personal reply</span>
-              </span>
-            </a>
-            <a href={`tel:${BRAND.phone}`} className="citem">
-              <span className="ic" aria-hidden="true">📞</span>
-              <span className="citem-txt">
-                <span className="main">🇮🇱 +972 52-836-9212</span>
-                <span className="detail">Available Sun–Fri 9:00–20:00 (IL)</span>
-              </span>
-            </a>
             <a href={`mailto:${BRAND.email}`} className="citem">
               <span className="ic" aria-hidden="true">✉️</span>
               <span className="citem-txt">
@@ -48,14 +29,22 @@ export function ContactSection() {
                 <span className="detail">Reply within 24 hours</span>
               </span>
             </a>
-            {CALENDLY_URL && (
-              <div className="calendly-slot">
-                <iframe
-                  src={`${CALENDLY_URL}?hide_gdpr_banner=1&background_color=14110F&text_color=F4F1EA&primary_color=C8862B`}
-                  title="Book an intro call"
-                  loading="lazy"
-                />
-              </div>
+            {BOOKING_URL ? (
+              <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="citem">
+                <span className="ic" aria-hidden="true">📅</span>
+                <span className="citem-txt">
+                  <span className="main">Book a free intro call</span>
+                  <span className="detail">15 min — no prep needed</span>
+                </span>
+              </a>
+            ) : (
+              <a href={`mailto:${BRAND.email}?subject=${encodeURIComponent("Intro call request")}`} className="citem">
+                <span className="ic" aria-hidden="true">📅</span>
+                <span className="citem-txt">
+                  <span className="main">Book a free intro call</span>
+                  <span className="detail">Email me to schedule — 15 min</span>
+                </span>
+              </a>
             )}
           </div>
 
