@@ -93,7 +93,10 @@ export async function POST(req: Request) {
       to: r.email,
       subject,
       html: buildHtml(unsub),
-      headers: { "List-Unsubscribe": `<${unsub}>` },
+      headers: {
+        "List-Unsubscribe": `<${unsub}>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
     });
     ok ? sent++ : failed++;
   }
