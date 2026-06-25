@@ -89,14 +89,35 @@ const button = (href: string, label: string) =>
 export function confirmEmail(confirmUrl: string, unsubscribeUrl?: string) {
   return shell(`
     <p style="margin:0 0 6px;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#C8862B;">One quick step</p>
-    <h1 style="margin:0 0 14px;font-size:24px;line-height:1.2;color:#F4F1EA;font-weight:700;">Confirm your email to keep The&nbsp;Vault unlocked</h1>
+    <h1 style="margin:0 0 14px;font-size:24px;line-height:1.2;color:#F4F1EA;font-weight:700;">Confirm your email to unlock The&nbsp;Vault</h1>
     <p style="margin:0 0 22px;font-size:15px;line-height:1.65;color:rgba(244,241,234,.66);">
-      You can already read today's how-to. Confirm your address so every future write-up — plus the
-      weekly Vault of prompts, tools and repos — lands in your inbox. Free.
+      One click confirms your address and unlocks every SharpenDaily how-to — the full written build
+      behind each video, plus the weekly Vault of prompts, tools and repos. Free.
     </p>
     ${button(confirmUrl, "Confirm & unlock The Vault →")}
     <p style="margin:18px 0 0;font-size:12.5px;line-height:1.6;color:rgba(244,241,234,.4);">
       Button not working? Paste this link:<br>
       <a href="${confirmUrl}" style="color:#C8862B;word-break:break-all;">${confirmUrl}</a>
     </p>`, unsubscribeUrl);
+}
+
+// New-how-to announcement, sent to confirmed subscribers by the broadcast job.
+export function articleEmail(
+  opts: { title: string; excerpt?: string | null; url: string },
+  unsubscribeUrl?: string
+) {
+  return shell(`
+    <p style="margin:0 0 6px;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#C8862B;">New how-to</p>
+    <h1 style="margin:0 0 14px;font-size:24px;line-height:1.25;color:#F4F1EA;font-weight:700;">${opts.title}</h1>
+    ${
+      opts.excerpt
+        ? `<p style="margin:0 0 22px;font-size:15px;line-height:1.65;color:rgba(244,241,234,.66);">${opts.excerpt}</p>`
+        : ""
+    }
+    ${button(opts.url, "Read the full how-to →")}`, unsubscribeUrl);
+}
+
+// Wrap arbitrary inner HTML in the branded shell — for a custom broadcast.
+export function broadcastEmail(innerHtml: string, unsubscribeUrl?: string) {
+  return shell(innerHtml, unsubscribeUrl);
 }
