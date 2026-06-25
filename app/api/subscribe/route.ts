@@ -45,10 +45,12 @@ export async function POST(req: NextRequest) {
   // Instant unlock (opt 1); confirm email is the real-address check (opt 2).
   if (!data.confirmed) {
     const confirmUrl = `${SD.url}/api/confirm?token=${data.token}`;
+    const unsubscribeUrl = `${SD.url}/api/unsubscribe?token=${data.token}`;
     await sendEmail({
       to: email,
       subject: "Confirm your SharpenDaily access",
-      html: confirmEmail(confirmUrl),
+      html: confirmEmail(confirmUrl, unsubscribeUrl),
+      headers: { "List-Unsubscribe": `<${unsubscribeUrl}>` },
     });
   }
 

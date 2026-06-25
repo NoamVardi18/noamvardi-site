@@ -514,6 +514,25 @@ ol.article-list li::before {
 .article-table tbody td { color: rgba(242, 239, 233, 0.85); vertical-align: top; }
 .article-table td:first-child { font-weight: 600; color: var(--text); }
 
+/* article inline markdown: links · inline code · fenced code blocks */
+.article-body a { color: var(--accent, #C8862B); text-decoration: underline; text-underline-offset: 2px; }
+.article-body a:hover { opacity: .85; }
+.article-body code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .9em; background: var(--surface-2); color: var(--text);
+  padding: .12em .4em; border-radius: 5px; border: 1px solid var(--glass-brd);
+}
+.article-code {
+  margin: 0 0 26px; padding: 16px 18px; overflow-x: auto;
+  background: var(--surface-2); border: 1px solid var(--glass-brd);
+  border-radius: var(--radius-sm); line-height: 1.6;
+}
+.article-code code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13.5px; color: rgba(242, 239, 233, 0.92);
+  background: none; border: none; padding: 0; white-space: pre;
+}
+
 /* ── Contact ───────────────────────────────────────────────────── */
 .contact-layout { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 28px; align-items: start; }
 .contact-cards { display: flex; flex-direction: column; gap: 14px; }

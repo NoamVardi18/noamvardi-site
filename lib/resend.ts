@@ -6,6 +6,7 @@ export async function sendEmail(opts: {
   to: string;
   subject: string;
   html: string;
+  headers?: Record<string, string>;
 }): Promise<boolean> {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
@@ -25,6 +26,7 @@ export async function sendEmail(opts: {
         reply_to: SD.replyTo,
         subject: opts.subject,
         html: opts.html,
+        ...(opts.headers ? { headers: opts.headers } : {}),
       }),
     });
     if (!res.ok) {
@@ -39,7 +41,8 @@ export async function sendEmail(opts: {
 }
 
 // Dark, branded shell. Tables + inline styles only — survives Gmail/Outlook.
-const shell = (inner: string) => `
+// Pass unsubscribeUrl to render a real (CAN-SPAM/GDPR-required) unsubscribe link.
+const shell = (inner: string, unsubscribeUrl?: string) => `
 <!doctype html>
 <html><body style="margin:0;padding:0;background:#0f0d0b;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0f0d0b;padding:32px 0;font-family:'Hanken Grotesk',-apple-system,Segoe UI,Roboto,Arial,sans-serif;">
@@ -65,7 +68,11 @@ const shell = (inner: string) => `
       <tr><td style="padding:22px 8px 0;">
         <p style="margin:0;font-size:12px;line-height:1.6;color:rgba(244,241,234,.38);">
           You're getting this because you asked for SharpenDaily how-tos.<br>
-          No spam, ever. Unsubscribe anytime · <a href="https://sharpendaily.co" style="color:rgba(244,241,234,.5);">sharpendaily.co</a>
+          No spam, ever. ${
+            unsubscribeUrl
+              ? `<a href="${unsubscribeUrl}" style="color:rgba(244,241,234,.5);">Unsubscribe</a>`
+              : "Unsubscribe anytime"
+          } · <a href="https://sharpendaily.co" style="color:rgba(244,241,234,.5);">sharpendaily.co</a>
         </p>
       </td></tr>
 
@@ -79,7 +86,7 @@ const button = (href: string, label: string) =>
     <a href="${href}" style="display:inline-block;padding:13px 28px;font-size:15px;font-weight:700;color:#14110F;text-decoration:none;">${label}</a>
   </td></tr></table>`;
 
-export function confirmEmail(confirmUrl: string) {
+export function confirmEmail(confirmUrl: string, unsubscribeUrl?: string) {
   return shell(`
     <p style="margin:0 0 6px;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#C8862B;">One quick step</p>
     <h1 style="margin:0 0 14px;font-size:24px;line-height:1.2;color:#F4F1EA;font-weight:700;">Confirm your email to keep The&nbsp;Vault unlocked</h1>
@@ -91,5 +98,5 @@ export function confirmEmail(confirmUrl: string) {
     <p style="margin:18px 0 0;font-size:12.5px;line-height:1.6;color:rgba(244,241,234,.4);">
       Button not working? Paste this link:<br>
       <a href="${confirmUrl}" style="color:#C8862B;word-break:break-all;">${confirmUrl}</a>
-    </p>`);
+    </p>`, unsubscribeUrl);
 }
