@@ -4,7 +4,7 @@ import { ArticleCard, type Article } from "@/components/ArticleCard";
 import { getSessionUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata = { title: "How-tos | SharpenDaily" };
+export const metadata = { title: "How-tos" };
 export const revalidate = 60;
 
 export default async function ArticlesPage() {
