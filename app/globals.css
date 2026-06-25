@@ -554,6 +554,13 @@ ol.article-list li::before {
 .citem-txt .main { font-weight: 700; }
 .citem .detail { font-size: 13px; color: var(--text-faint); margin-top: 2px; }
 
+/* phone prefix + number combined input */
+.phone-input-wrap { display: flex; gap: 0; border: 1px solid var(--glass-brd); border-radius: 12px; overflow: hidden; background: rgba(7,10,15,.5); transition: border-color .2s; }
+.phone-input-wrap:focus-within { border-color: var(--accent); }
+.phone-prefix-select { background: rgba(255,255,255,.04); border: none; border-right: 1px solid var(--glass-brd); color: var(--text); font-size: 14px; font-family: var(--font-he); padding: 13px 10px; outline: none; cursor: pointer; min-width: 0; flex: 0 0 auto; max-width: 56%; }
+.phone-prefix-select option { background: #16120f; }
+.phone-number-input { background: transparent; border: none; color: var(--text); font-size: 15px; font-family: var(--font-he); padding: 13px 14px; outline: none; flex: 1 1 0; min-width: 0; width: 100%; }
+
 .contact-form-panel { padding: 34px; }
 .form { display: flex; flex-direction: column; gap: 16px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }

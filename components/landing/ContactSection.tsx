@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { BRAND } from "@/lib/constants";
 import { submitContactAction } from "@/app/contact/actions";
+import { PhoneInput } from "./PhoneInput";
 
 const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL;
 
@@ -70,7 +71,7 @@ export function ContactSection() {
                   </div>
                   <div className="fg">
                     <label htmlFor="c-phone">Phone</label>
-                    <input id="c-phone" name="phone" type="tel" placeholder="+972 5X-XXX-XXXX" autoComplete="tel" dir="ltr" />
+                    <PhoneInput />
                   </div>
                 </div>
                 <div className="form-row">
