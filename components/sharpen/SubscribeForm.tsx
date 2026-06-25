@@ -19,6 +19,7 @@ export function SubscribeForm({
   const [consent, setConsent] = useState(false);
   const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [msg, setMsg] = useState("");
+  const [alreadyConfirmed, setAlreadyConfirmed] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -41,6 +42,7 @@ export function SubscribeForm({
         setMsg(data.error || "Something went wrong");
         return;
       }
+      setAlreadyConfirmed(!!data.confirmed);
       setState("done");
       onDone?.();
       router.refresh();
@@ -53,7 +55,9 @@ export function SubscribeForm({
   if (state === "done") {
     return (
       <p className="sd-form-done">
-        You&apos;re in. Check your inbox to confirm — The Vault is unlocked, every future how-to is free.
+        {alreadyConfirmed
+          ? "Welcome back — The Vault is unlocked."
+          : "Almost there — check your inbox and click the confirm link to unlock The Vault. Every how-to is free."}
       </p>
     );
   }

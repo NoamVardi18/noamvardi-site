@@ -42,7 +42,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 
-  // Instant unlock (opt 1); confirm email is the real-address check (opt 2).
+  // Access is granted ONLY after the user confirms via the email link (sets the
+  // cookie in /api/confirm). New/unconfirmed addresses get the confirm email and
+  // stay locked until they click it. An already-confirmed address (e.g. resubmitting
+  // on a new device) unlocks immediately.
   if (!data.confirmed) {
     const confirmUrl = `${SD.url}/api/confirm?token=${data.token}`;
     const unsubscribeUrl = `${SD.url}/api/unsubscribe?token=${data.token}`;
@@ -54,13 +57,15 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const res = NextResponse.json({ ok: true });
-  res.cookies.set(SD_ACCESS_COOKIE, "1", {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: true,
-    maxAge: YEAR,
-    path: "/",
-  });
+  const res = NextResponse.json({ ok: true, confirmed: !!data.confirmed });
+  if (data.confirmed) {
+    res.cookies.set(SD_ACCESS_COOKIE, "1", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: true,
+      maxAge: YEAR,
+      path: "/",
+    });
+  }
   return res;
 }

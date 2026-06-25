@@ -14,7 +14,7 @@ export function ArticleGate({ sourceVideo }: { sourceVideo?: string }) {
       </div>
       <div className="sd-gate-overlay">
         <h3>Enter your email to read the full how-to</h3>
-        <p>One email unlocks this and every future SharpenDaily how-to. Free.</p>
+        <p>Confirm via the email link to unlock this and every future SharpenDaily how-to. Free.</p>
         <SubscribeForm sourceVideo={sourceVideo} cta="Unlock free" />
         <span className="sd-trust">No spam. Unsubscribe anytime.</span>
       </div>
