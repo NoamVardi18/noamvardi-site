@@ -13,7 +13,7 @@ import { SD, SD_ACCESS_COOKIE } from "@/lib/sd";
 export const revalidate = 60;
 
 // Inline markdown → React nodes: `code`, **bold**, [text](url). No HTML injection.
-const INLINE_RE = /(`[^`]+`)|(**[^*]+**)|([^]]+]([^)]+))/g;
+const INLINE_RE = /(`[^`]+`)|(\*\*[^*]+\*\*)|(\[[^\]]+\]\([^)]+\))/g;
 function inline(text: string): ReactNode[] {
   const out: ReactNode[] = [];
   let last = 0;
