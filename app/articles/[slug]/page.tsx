@@ -13,7 +13,7 @@ import { SD, SD_ACCESS_COOKIE } from "@/lib/sd";
 export const revalidate = 60;
 
 // Inline markdown → React nodes: `code`, **bold**, [text](url). No HTML injection.
-const INLINE_RE = /(`[^`]+`)|(\*\*[^*]+\*\*)|(\[[^\]]+\]\([^)]+\))/g;
+const INLINE_RE = /(`[^`]+`)|(**[^*]+**)|([^]]+]([^)]+))/g;
 function inline(text: string): ReactNode[] {
   const out: ReactNode[] = [];
   let last = 0;
@@ -171,6 +171,17 @@ export default async function ArticlePage({
     );
   };
   const renderPara = (para: string, i: number) => {
+    // [!BUTTON: text](url) — prominent in-body CTA button (e.g. giveaway download)
+    const btnMatch = para.trim().match(/^\[!BUTTON:\s*([^\]]+)\]\(([^)]+)\)$/);
+    if (btnMatch) {
+      const ext = /^https?:\/\//.test(btnMatch[2]);
+      return (
+        <a key={i} href={btnMatch[2]} className="article-cta-btn"
+           {...(ext ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+          {btnMatch[1]}
+        </a>
+      );
+    }
     if (isTableBlock(para)) return renderTable(para, i);
     // peel a leading "## heading" line even if body text is glued to it with
     // a single newline, so a whole section never renders as one big heading
