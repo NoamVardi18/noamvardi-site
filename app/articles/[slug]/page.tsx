@@ -259,6 +259,13 @@ export default async function ArticlePage({
           ) : (
             <>
               {blocks.slice(0, 1).map(renderBlock)}
+              {/* Hoist any giveaway [!BUTTON:] above the gate so the download CTA
+                  is visible to logged-out visitors (otherwise it sits in the
+                  gated body and the article shows no button at all). */}
+              {blocks
+                .slice(1)
+                .filter((b) => b.type === "text" && /^\[!BUTTON:/.test(b.content.trim()))
+                .map((b, i) => renderBlock(b, 10000 + i))}
               <ArticleGate sourceVideo={slug} />
             </>
           )}
